@@ -1,0 +1,50 @@
+# ── Java / Maven ──────────────────────────────────────────────────────────────
+target/
+*.class
+*.jar
+*.war
+*.ear
+*.nar
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+# ── IntelliJ IDEA ─────────────────────────────────────────────────────────────
+.idea/
+!.idea/.gitignore
+*.iml
+*.iws
+*.ipr
+out/
+
+# ── Eclipse ───────────────────────────────────────────────────────────────────
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+# ── Node / npm ────────────────────────────────────────────────────────────────
+node_modules/
+dist/
+.vite/
+.nuxt/
+.output/
+*.local
+
+# ── Environment / secrets ─────────────────────────────────────────────────────
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# ── OS ────────────────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+
+# ── Logs ──────────────────────────────────────────────────────────────────────
+*.log
+logs/
