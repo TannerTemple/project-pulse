@@ -79,8 +79,9 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowedOrigins(List.of(
-                "http://localhost:5173",
-                "http://localhost:4173"
+                "http://localhost:3000",   // Vite dev server (this project)
+                "http://localhost:5173",   // Vite default port
+                "http://localhost:4173"    // Vite preview
         ));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
