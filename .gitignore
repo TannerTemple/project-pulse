@@ -41,6 +41,10 @@ dist/
 *.pem
 *.key
 
+# ── Local Spring Boot overrides (DB creds, JWT secret, etc.) ──────────────────
+application-local.properties
+**/src/main/resources/application-local.properties
+
 # ── OS ────────────────────────────────────────────────────────────────────────
 .DS_Store
 Thumbs.db
