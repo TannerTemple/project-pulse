@@ -15,19 +15,43 @@
     <!-- Filters -->
     <v-row class="mb-2">
       <v-col cols="12" sm="4">
-        <v-text-field v-model="filters.firstName" label="First name" variant="outlined" density="comfortable" clearable @update:model-value="load" />
+        <v-text-field
+          v-model="filters.firstName"
+          clearable
+          density="comfortable"
+          label="First name"
+          variant="outlined"
+          @update:model-value="load"
+        />
       </v-col>
       <v-col cols="12" sm="4">
-        <v-text-field v-model="filters.lastName" label="Last name" variant="outlined" density="comfortable" clearable @update:model-value="load" />
+        <v-text-field
+          v-model="filters.lastName"
+          clearable
+          density="comfortable"
+          label="Last name"
+          variant="outlined"
+          @update:model-value="load"
+        />
       </v-col>
       <v-col v-if="auth.role === 'ADMIN'" cols="12" sm="4">
-        <v-select v-model="filters.sectionId" label="Section" :items="sections" item-title="name" item-value="id" variant="outlined" density="comfortable" clearable @update:model-value="load" />
+        <v-select
+          v-model="filters.sectionId"
+          clearable
+          density="comfortable"
+          item-title="name"
+          item-value="id"
+          :items="sections"
+          label="Section"
+          variant="outlined"
+          @update:model-value="load"
+        />
       </v-col>
     </v-row>
 
-    <v-alert v-if="error" type="error" variant="tonal" class="mb-4">{{ error }}</v-alert>
+    <v-alert v-if="error" class="mb-4" type="error" variant="tonal">{{ error }}</v-alert>
 
-    <v-progress-circular v-if="loading" indeterminate color="primary" class="d-block mx-auto my-8" />
+    <v-progress-circular v-if="loading" class="d-block mx-auto my-8" color="primary" indeterminate />
 
     <v-table v-else-if="students.length > 0" hover>
       <thead>
@@ -37,7 +61,7 @@
           <th>Section</th>
           <th>Team</th>
           <th>Status</th>
-          <th v-if="auth.role === 'ADMIN'"></th>
+          <th v-if="auth.role === 'ADMIN'" />
         </tr>
       </thead>
       <tbody>
@@ -56,7 +80,13 @@
             </v-chip>
           </td>
           <td v-if="auth.role === 'ADMIN'">
-            <v-btn icon="mdi-delete" variant="text" size="small" color="error" @click="confirmDelete(s)" />
+            <v-btn
+              color="error"
+              icon="mdi-delete"
+              size="small"
+              variant="text"
+              @click="confirmDelete(s)"
+            />
           </td>
         </tr>
       </tbody>
@@ -69,12 +99,36 @@
       <v-card rounded="lg">
         <v-card-title class="pa-4">Invite Students</v-card-title>
         <v-card-text class="px-4">
-          <v-alert v-if="inviteError" type="error" variant="tonal" class="mb-3">{{ inviteError }}</v-alert>
-          <v-alert v-if="inviteSuccess" type="success" variant="tonal" class="mb-3">{{ inviteSuccess }}</v-alert>
+          <v-alert v-if="inviteError" class="mb-3" type="error" variant="tonal">{{ inviteError }}</v-alert>
+          <v-alert v-if="inviteSuccess" class="mb-3" type="success" variant="tonal">{{ inviteSuccess }}</v-alert>
 
-          <v-select v-model="invite.sectionId" label="Section" :items="sections" item-title="name" item-value="id" variant="outlined" density="comfortable" :rules="[r => !!r || 'Required']" class="mb-3" />
-          <v-textarea v-model="invite.emails" label="Email addresses (semicolon-separated)" variant="outlined" density="comfortable" rows="3" placeholder="alice@tcu.edu; bob@tcu.edu" class="mb-3" />
-          <v-textarea v-model="invite.customMessage" label="Custom message (optional)" variant="outlined" density="comfortable" rows="2" />
+          <v-select
+            v-model="invite.sectionId"
+            class="mb-3"
+            density="comfortable"
+            item-title="name"
+            item-value="id"
+            :items="sections"
+            label="Section"
+            :rules="[r => !!r || 'Required']"
+            variant="outlined"
+          />
+          <v-textarea
+            v-model="invite.emails"
+            class="mb-3"
+            density="comfortable"
+            label="Email addresses (semicolon-separated)"
+            placeholder="alice@tcu.edu; bob@tcu.edu"
+            rows="3"
+            variant="outlined"
+          />
+          <v-textarea
+            v-model="invite.customMessage"
+            density="comfortable"
+            label="Custom message (optional)"
+            rows="2"
+            variant="outlined"
+          />
         </v-card-text>
         <v-card-actions class="px-4 pb-4">
           <v-spacer />
@@ -100,88 +154,88 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted } from 'vue'
-import { api, type User } from '@/api'
-import { useAuthStore } from '@/stores/auth'
+  import { onMounted, ref } from 'vue'
+  import { api, type User } from '@/api'
+  import { useAuthStore } from '@/stores/auth'
 
-const auth = useAuthStore()
+  const auth = useAuthStore()
 
-const students    = ref<User[]>([])
-const sections    = ref<any[]>([])
-const loading     = ref(false)
-const error       = ref('')
-const filters     = ref({ firstName: '', lastName: '', sectionId: null as number | null })
+  const students = ref<User[]>([])
+  const sections = ref<any[]>([])
+  const loading = ref(false)
+  const error = ref('')
+  const filters = ref({ firstName: '', lastName: '', sectionId: null as number | null })
 
-const inviteDialog  = ref(false)
-const inviting      = ref(false)
-const inviteError   = ref('')
-const inviteSuccess = ref('')
-const invite        = ref({ sectionId: null as number | null, emails: '', customMessage: '' })
+  const inviteDialog = ref(false)
+  const inviting = ref(false)
+  const inviteError = ref('')
+  const inviteSuccess = ref('')
+  const invite = ref({ sectionId: null as number | null, emails: '', customMessage: '' })
 
-const deleteDialog    = ref(false)
-const deleting        = ref(false)
-const studentToDelete = ref<User | null>(null)
+  const deleteDialog = ref(false)
+  const deleting = ref(false)
+  const studentToDelete = ref<User | null>(null)
 
-async function load() {
-  loading.value = true
-  error.value   = ''
-  try {
-    const p = new URLSearchParams()
-    if (filters.value.firstName) p.set('firstName', filters.value.firstName)
-    if (filters.value.lastName)  p.set('lastName',  filters.value.lastName)
-    if (filters.value.sectionId) p.set('sectionId', String(filters.value.sectionId))
-    const q = p.toString() ? `?${p}` : ''
-    students.value = await api.get<User[]>(`/students${q}`)
-  } catch (e: any) {
-    error.value = e.message
-  } finally {
-    loading.value = false
+  async function load () {
+    loading.value = true
+    error.value = ''
+    try {
+      const p = new URLSearchParams()
+      if (filters.value.firstName) p.set('firstName', filters.value.firstName)
+      if (filters.value.lastName) p.set('lastName', filters.value.lastName)
+      if (filters.value.sectionId) p.set('sectionId', String(filters.value.sectionId))
+      const q = p.toString() ? `?${p}` : ''
+      students.value = await api.get<User[]>(`/students${q}`)
+    } catch (error_: any) {
+      error.value = error_.message
+    } finally {
+      loading.value = false
+    }
   }
-}
 
-async function sendInvites() {
-  inviteError.value   = ''
-  inviteSuccess.value = ''
-  if (!invite.value.sectionId || !invite.value.emails.trim()) {
-    inviteError.value = 'Section and at least one email are required.'
-    return
+  async function sendInvites () {
+    inviteError.value = ''
+    inviteSuccess.value = ''
+    if (!invite.value.sectionId || !invite.value.emails.trim()) {
+      inviteError.value = 'Section and at least one email are required.'
+      return
+    }
+    inviting.value = true
+    try {
+      const res = await api.post<any>(`/sections/${invite.value.sectionId}/invitations/students`, {
+        emails: invite.value.emails,
+        customMessage: invite.value.customMessage,
+      })
+      inviteSuccess.value = `${res.emailsSent} invitation(s) sent.`
+      invite.value = { sectionId: null, emails: '', customMessage: '' }
+    } catch (error_: any) {
+      inviteError.value = error_.message
+    } finally {
+      inviting.value = false
+    }
   }
-  inviting.value = true
-  try {
-    const res = await api.post<any>(`/sections/${invite.value.sectionId}/invitations/students`, {
-      emails: invite.value.emails,
-      customMessage: invite.value.customMessage,
-    })
-    inviteSuccess.value = `${res.emailsSent} invitation(s) sent.`
-    invite.value = { sectionId: null, emails: '', customMessage: '' }
-  } catch (e: any) {
-    inviteError.value = e.message
-  } finally {
-    inviting.value = false
+
+  function confirmDelete (student: User) {
+    studentToDelete.value = student
+    deleteDialog.value = true
   }
-}
 
-function confirmDelete(student: User) {
-  studentToDelete.value = student
-  deleteDialog.value    = true
-}
+  async function doDelete () {
+    if (!studentToDelete.value) return
+    deleting.value = true
+    try {
+      await api.delete(`/students/${studentToDelete.value.id}`)
+      deleteDialog.value = false
+      await load()
+    } catch (error_: any) {
+      error.value = error_.message
+    } finally {
+      deleting.value = false
+    }
+  }
 
-async function doDelete() {
-  if (!studentToDelete.value) return
-  deleting.value = true
-  try {
-    await api.delete(`/students/${studentToDelete.value.id}`)
-    deleteDialog.value = false
+  onMounted(async () => {
+    sections.value = await api.get<any[]>('/sections').catch(() => [])
     await load()
-  } catch (e: any) {
-    error.value = e.message
-  } finally {
-    deleting.value = false
-  }
-}
-
-onMounted(async () => {
-  sections.value = await api.get<any[]>('/sections').catch(() => [])
-  await load()
-})
+  })
 </script>

@@ -7,9 +7,9 @@
       </v-btn>
     </div>
 
-    <v-alert v-if="error" type="error" variant="tonal" class="mb-4">{{ error }}</v-alert>
+    <v-alert v-if="error" class="mb-4" type="error" variant="tonal">{{ error }}</v-alert>
 
-    <v-progress-circular v-if="loading" indeterminate color="primary" class="d-block mx-auto my-8" />
+    <v-progress-circular v-if="loading" class="d-block mx-auto my-8" color="primary" indeterminate />
 
     <v-row v-else-if="rubrics.length > 0">
       <v-col v-for="rubric in rubrics" :key="rubric.id" cols="12" md="6">
@@ -36,23 +36,23 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted } from 'vue'
-import { api, type Rubric } from '@/api'
+  import { onMounted, ref } from 'vue'
+  import { api, type Rubric } from '@/api'
 
-const rubrics = ref<Rubric[]>([])
-const loading = ref(false)
-const error   = ref('')
+  const rubrics = ref<Rubric[]>([])
+  const loading = ref(false)
+  const error = ref('')
 
-async function load() {
-  loading.value = true
-  try {
-    rubrics.value = await api.get<Rubric[]>('/rubrics')
-  } catch (e: any) {
-    error.value = e.message
-  } finally {
-    loading.value = false
+  async function load () {
+    loading.value = true
+    try {
+      rubrics.value = await api.get<Rubric[]>('/rubrics')
+    } catch (error_: any) {
+      error.value = error_.message
+    } finally {
+      loading.value = false
+    }
   }
-}
 
-onMounted(load)
+  onMounted(load)
 </script>

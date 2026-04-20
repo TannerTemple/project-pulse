@@ -1,51 +1,51 @@
 <template>
   <v-container class="pa-6" style="max-width: 700px">
     <div class="d-flex align-center mb-6 ga-3">
-      <v-btn icon="mdi-arrow-left" variant="text" :to="{ name: 'teams' }" />
+      <v-btn icon="mdi-arrow-left" :to="{ name: 'teams' }" variant="text" />
       <h1 class="text-h5 font-weight-bold">{{ isEdit ? 'Edit Team' : 'New Team' }}</h1>
     </div>
 
-    <v-alert v-if="error" type="error" variant="tonal" class="mb-4">{{ error }}</v-alert>
+    <v-alert v-if="error" class="mb-4" type="error" variant="tonal">{{ error }}</v-alert>
 
     <v-card rounded="lg">
       <v-card-text class="pa-6">
         <v-form ref="formRef" @submit.prevent="handleSubmit">
           <v-text-field
             v-model="form.name"
-            label="Team name"
-            variant="outlined"
-            density="comfortable"
-            :rules="[rules.required]"
             class="mb-3"
+            density="comfortable"
+            label="Team name"
+            :rules="[rules.required]"
+            variant="outlined"
           />
 
           <v-textarea
             v-model="form.description"
-            label="Description (optional)"
-            variant="outlined"
-            density="comfortable"
-            rows="3"
             class="mb-3"
+            density="comfortable"
+            label="Description (optional)"
+            rows="3"
+            variant="outlined"
           />
 
           <v-text-field
             v-model="form.websiteUrl"
+            class="mb-3"
+            density="comfortable"
             label="Website URL (optional)"
             variant="outlined"
-            density="comfortable"
-            class="mb-3"
           />
 
           <v-select
             v-model="form.sectionId"
-            label="Section"
-            :items="sections"
+            class="mb-3"
+            density="comfortable"
             item-title="name"
             item-value="id"
-            variant="outlined"
-            density="comfortable"
+            :items="sections"
+            label="Section"
             :rules="[rules.required]"
-            class="mb-3"
+            variant="outlined"
           />
 
           <!-- Student assignment -->
@@ -53,37 +53,37 @@
           <p class="text-subtitle-2 mb-3">Assign Students</p>
           <v-autocomplete
             v-model="form.studentIds"
-            label="Students"
-            :items="eligibleStudents"
+            chips
+            class="mb-3"
+            closable-chips
+            density="comfortable"
             :item-title="(u: any) => `${u.firstName} ${u.lastName} (${u.email})`"
             item-value="id"
-            variant="outlined"
-            density="comfortable"
+            :items="eligibleStudents"
+            label="Students"
             multiple
-            chips
-            closable-chips
-            class="mb-3"
+            variant="outlined"
           />
 
           <!-- Instructor assignment -->
           <p class="text-subtitle-2 mb-3">Assign Instructors</p>
           <v-autocomplete
             v-model="form.instructorIds"
-            label="Instructors"
-            :items="instructors"
+            chips
+            class="mb-3"
+            closable-chips
+            density="comfortable"
             :item-title="(u: any) => `${u.firstName} ${u.lastName}`"
             item-value="id"
-            variant="outlined"
-            density="comfortable"
+            :items="instructors"
+            label="Instructors"
             multiple
-            chips
-            closable-chips
-            class="mb-3"
+            variant="outlined"
           />
 
           <div class="d-flex justify-end ga-2 mt-4">
-            <v-btn variant="text" :to="{ name: 'teams' }">Cancel</v-btn>
-            <v-btn type="submit" color="primary" :loading="saving">
+            <v-btn :to="{ name: 'teams' }" variant="text">Cancel</v-btn>
+            <v-btn color="primary" :loading="saving" type="submit">
               {{ isEdit ? 'Save Changes' : 'Create Team' }}
             </v-btn>
           </div>
@@ -94,101 +94,103 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, computed, watch, onMounted } from 'vue'
-import { useRouter, useRoute } from 'vue-router'
-import { api } from '@/api'
+  import { computed, onMounted, ref, watch } from 'vue'
+  import { useRoute, useRouter } from 'vue-router'
+  import { api } from '@/api'
 
-const router = useRouter()
-const route  = useRoute()
-const isEdit = computed(() => !!route.params.id)
+  const router = useRouter()
+  const route = useRoute()
+  const isEdit = computed(() => !!route.params.id)
 
-const formRef = ref()
-const saving  = ref(false)
-const error   = ref('')
+  const formRef = ref()
+  const saving = ref(false)
+  const error = ref('')
 
-interface Section { id: number; name: string }
-interface User    { id: number; firstName: string; lastName: string; email: string; sectionId?: number }
-interface Team    { id: number; name: string; sectionId: number; students: any[]; instructors: any[] }
+  interface Section { id: number, name: string }
+  interface User { id: number, firstName: string, lastName: string, email: string, sectionId?: number }
+  interface Team { id: number, name: string, sectionId: number, students: any[], instructors: any[] }
 
-const sections         = ref<Section[]>([])
-const allStudents      = ref<User[]>([])
-const instructors      = ref<User[]>([])
+  const sections = ref<Section[]>([])
+  const allStudents = ref<User[]>([])
+  const instructors = ref<User[]>([])
 
-const form = ref({
-  name: '', description: '', websiteUrl: '',
-  sectionId: null as number | null,
-  studentIds: [] as number[],
-  instructorIds: [] as number[],
-})
+  const form = ref({
+    name: '', description: '', websiteUrl: '',
+    sectionId: null as number | null,
+    studentIds: [] as number[],
+    instructorIds: [] as number[],
+  })
 
-// Only show students belonging to the selected section
-const eligibleStudents = computed(() =>
-  form.value.sectionId
-    ? allStudents.value.filter(s => s.sectionId === form.value.sectionId)
-    : allStudents.value
-)
+  // Only show students belonging to the selected section
+  const eligibleStudents = computed(() =>
+    form.value.sectionId
+      ? allStudents.value.filter(s => s.sectionId === form.value.sectionId)
+      : allStudents.value,
+  )
 
-const rules = { required: (v: any) => (v !== null && v !== '' && v !== undefined) || 'Required' }
+  const rules = { required: (v: any) => (v !== null && v !== '' && v !== undefined) || 'Required' }
 
-// Clear student selection when section changes
-watch(() => form.value.sectionId, () => { form.value.studentIds = [] })
+  // Clear student selection when section changes
+  watch(() => form.value.sectionId, () => {
+    form.value.studentIds = []
+  })
 
-async function load() {
-  sections.value    = await api.get<Section[]>('/sections').catch(() => [])
-  allStudents.value = await api.get<User[]>('/students').catch(() => [])
-  instructors.value = await api.get<User[]>('/instructors').catch(() => [])
+  async function load () {
+    sections.value = await api.get<Section[]>('/sections').catch(() => [])
+    allStudents.value = await api.get<User[]>('/students').catch(() => [])
+    instructors.value = await api.get<User[]>('/instructors').catch(() => [])
 
-  if (isEdit.value) {
-    const t = await api.get<Team>(`/teams/${route.params.id}`)
-    form.value = {
-      name:          t.name,
-      description:   (t as any).description ?? '',
-      websiteUrl:    (t as any).websiteUrl ?? '',
-      sectionId:     t.sectionId,
-      studentIds:    t.students.map((s: any) => s.id),
-      instructorIds: t.instructors.map((i: any) => i.id),
-    }
-  }
-}
-
-async function handleSubmit() {
-  const { valid } = await formRef.value.validate()
-  if (!valid) return
-
-  saving.value = true
-  error.value  = ''
-  try {
-    const payload = {
-      name: form.value.name,
-      description: form.value.description,
-      websiteUrl: form.value.websiteUrl,
-      sectionId: form.value.sectionId,
-    }
-    let teamId: number
     if (isEdit.value) {
-      const t = await api.put<any>(`/teams/${route.params.id}`, payload)
-      teamId = t.id
-    } else {
-      const t = await api.post<any>('/teams', payload)
-      teamId = t.id
+      const t = await api.get<Team>(`/teams/${route.params.id}`)
+      form.value = {
+        name: t.name,
+        description: (t as any).description ?? '',
+        websiteUrl: (t as any).websiteUrl ?? '',
+        sectionId: t.sectionId,
+        studentIds: t.students.map((s: any) => s.id),
+        instructorIds: t.instructors.map((i: any) => i.id),
+      }
     }
-
-    // Assign students (only if any selected)
-    if (form.value.studentIds.length > 0) {
-      await api.post(`/teams/${teamId}/students`, { userIds: form.value.studentIds })
-    }
-    // Assign instructors (only if any selected)
-    if (form.value.instructorIds.length > 0) {
-      await api.post(`/teams/${teamId}/instructors`, { userIds: form.value.instructorIds })
-    }
-
-    router.push({ name: 'teams' })
-  } catch (e: any) {
-    error.value = e.message
-  } finally {
-    saving.value = false
   }
-}
 
-onMounted(load)
+  async function handleSubmit () {
+    const { valid } = await formRef.value.validate()
+    if (!valid) return
+
+    saving.value = true
+    error.value = ''
+    try {
+      const payload = {
+        name: form.value.name,
+        description: form.value.description,
+        websiteUrl: form.value.websiteUrl,
+        sectionId: form.value.sectionId,
+      }
+      let teamId: number
+      if (isEdit.value) {
+        const t = await api.put<any>(`/teams/${route.params.id}`, payload)
+        teamId = t.id
+      } else {
+        const t = await api.post<any>('/teams', payload)
+        teamId = t.id
+      }
+
+      // Assign students (only if any selected)
+      if (form.value.studentIds.length > 0) {
+        await api.post(`/teams/${teamId}/students`, { userIds: form.value.studentIds })
+      }
+      // Assign instructors (only if any selected)
+      if (form.value.instructorIds.length > 0) {
+        await api.post(`/teams/${teamId}/instructors`, { userIds: form.value.instructorIds })
+      }
+
+      router.push({ name: 'teams' })
+    } catch (error_: any) {
+      error.value = error_.message
+    } finally {
+      saving.value = false
+    }
+  }
+
+  onMounted(load)
 </script>

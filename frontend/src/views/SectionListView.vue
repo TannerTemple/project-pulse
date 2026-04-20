@@ -10,21 +10,21 @@
     <!-- Search -->
     <v-text-field
       v-model="search"
+      class="mb-4"
+      clearable
+      density="comfortable"
       label="Search by name"
       prepend-inner-icon="mdi-magnify"
-      variant="outlined"
-      density="comfortable"
-      clearable
-      class="mb-4"
       style="max-width: 400px"
+      variant="outlined"
       @update:model-value="load"
     />
 
-    <v-alert v-if="error" type="error" variant="tonal" class="mb-4">{{ error }}</v-alert>
+    <v-alert v-if="error" class="mb-4" type="error" variant="tonal">{{ error }}</v-alert>
 
     <v-row v-if="loading">
-      <v-col cols="12" class="text-center py-8">
-        <v-progress-circular indeterminate color="primary" />
+      <v-col class="text-center py-8" cols="12">
+        <v-progress-circular color="primary" indeterminate />
       </v-col>
     </v-row>
 
@@ -40,9 +40,11 @@
       <v-col
         v-for="section in sections"
         :key="section.id"
-        cols="12" md="6" lg="4"
+        cols="12"
+        lg="4"
+        md="6"
       >
-        <v-card rounded="lg" hover>
+        <v-card hover rounded="lg">
           <v-card-title class="pa-4 pb-2">
             {{ section.name }}
           </v-card-title>
@@ -59,9 +61,9 @@
           </v-card-text>
           <v-card-actions class="px-4 pb-3">
             <v-btn
-              variant="tonal"
               size="small"
               :to="{ name: 'section-edit', params: { id: section.id } }"
+              variant="tonal"
             >
               Edit
             </v-btn>
@@ -73,26 +75,26 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted } from 'vue'
-import { api, type Section } from '@/api'
+  import { onMounted, ref } from 'vue'
+  import { api, type Section } from '@/api'
 
-const sections = ref<Section[]>([])
-const loading  = ref(false)
-const error    = ref('')
-const search   = ref('')
+  const sections = ref<Section[]>([])
+  const loading = ref(false)
+  const error = ref('')
+  const search = ref('')
 
-async function load() {
-  loading.value = true
-  error.value   = ''
-  try {
-    const q = search.value ? `?name=${encodeURIComponent(search.value)}` : ''
-    sections.value = await api.get<Section[]>(`/sections${q}`)
-  } catch (e: any) {
-    error.value = e.message
-  } finally {
-    loading.value = false
+  async function load () {
+    loading.value = true
+    error.value = ''
+    try {
+      const q = search.value ? `?name=${encodeURIComponent(search.value)}` : ''
+      sections.value = await api.get<Section[]>(`/sections${q}`)
+    } catch (error_: any) {
+      error.value = error_.message
+    } finally {
+      loading.value = false
+    }
   }
-}
 
-onMounted(load)
+  onMounted(load)
 </script>

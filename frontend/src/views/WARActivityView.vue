@@ -6,18 +6,25 @@
     <!-- Week selector -->
     <v-select
       v-model="selectedWeekId"
-      label="Select week"
-      :items="weeks"
+      class="mb-4"
+      density="comfortable"
       :item-title="(w: any) => formatWeekLabel(w)"
       item-value="id"
-      variant="outlined"
-      density="comfortable"
+      :items="weeks"
+      label="Select week"
       style="max-width: 320px"
-      class="mb-4"
+      variant="outlined"
       @update:model-value="loadActivities"
     />
 
-    <v-alert v-if="error" type="error" variant="tonal" class="mb-4" closable @click:close="error = ''">{{ error }}</v-alert>
+    <v-alert
+      v-if="error"
+      class="mb-4"
+      closable
+      type="error"
+      variant="tonal"
+      @click:close="error = ''"
+    >{{ error }}</v-alert>
 
     <div v-if="selectedWeekId">
       <!-- Activity list -->
@@ -30,7 +37,7 @@
         </v-btn>
       </div>
 
-      <v-progress-circular v-if="loading" indeterminate color="primary" class="d-block mx-auto my-8" />
+      <v-progress-circular v-if="loading" class="d-block mx-auto my-8" color="primary" indeterminate />
 
       <v-alert v-else-if="activities.length === 0" type="info" variant="tonal">
         No activities logged for this week yet.
@@ -44,13 +51,13 @@
             <th>Planned h</th>
             <th>Actual h</th>
             <th>Status</th>
-            <th></th>
+            <th />
           </tr>
         </thead>
         <tbody>
           <tr v-for="a in activities" :key="a.id">
             <td>
-              <v-chip size="small" :color="categoryColor(a.category)" variant="tonal">
+              <v-chip :color="categoryColor(a.category)" size="small" variant="tonal">
                 {{ a.category }}
               </v-chip>
             </td>
@@ -61,32 +68,38 @@
             <td>{{ a.plannedHours }}</td>
             <td>{{ a.actualHours ?? '—' }}</td>
             <td>
-              <v-chip size="small" :color="statusColor(a.status)" variant="tonal">{{ a.status }}</v-chip>
+              <v-chip :color="statusColor(a.status)" size="small" variant="tonal">{{ a.status }}</v-chip>
             </td>
             <td>
-              <v-btn icon="mdi-pencil" variant="text" size="small" @click="openForm(a)" />
-              <v-btn icon="mdi-delete" variant="text" size="small" color="error" @click="confirmDelete(a)" />
+              <v-btn icon="mdi-pencil" size="small" variant="text" @click="openForm(a)" />
+              <v-btn
+                color="error"
+                icon="mdi-delete"
+                size="small"
+                variant="text"
+                @click="confirmDelete(a)"
+              />
             </td>
           </tr>
         </tbody>
       </v-table>
 
       <!-- Summary -->
-      <v-card v-if="activities.length > 0" rounded="lg" variant="tonal" class="mt-4 pa-4">
+      <v-card v-if="activities.length > 0" class="mt-4 pa-4" rounded="lg" variant="tonal">
         <v-row>
-          <v-col cols="6" sm="3" class="text-center">
+          <v-col class="text-center" cols="6" sm="3">
             <div class="text-h6">{{ totalPlanned.toFixed(1) }}</div>
             <div class="text-caption">Planned hours</div>
           </v-col>
-          <v-col cols="6" sm="3" class="text-center">
+          <v-col class="text-center" cols="6" sm="3">
             <div class="text-h6">{{ totalActual.toFixed(1) }}</div>
             <div class="text-caption">Actual hours</div>
           </v-col>
-          <v-col cols="6" sm="3" class="text-center">
+          <v-col class="text-center" cols="6" sm="3">
             <div class="text-h6">{{ activities.filter(a => a.status === 'COMPLETED').length }}</div>
             <div class="text-caption">Completed</div>
           </v-col>
-          <v-col cols="6" sm="3" class="text-center">
+          <v-col class="text-center" cols="6" sm="3">
             <div class="text-h6">{{ activities.filter(a => a.status === 'IN_PROGRESS').length }}</div>
             <div class="text-caption">In progress</div>
           </v-col>
@@ -99,66 +112,66 @@
       <v-card rounded="lg">
         <v-card-title class="pa-4">{{ editing ? 'Edit Activity' : 'Add Activity' }}</v-card-title>
         <v-card-text class="px-4">
-          <v-alert v-if="formError" type="error" variant="tonal" class="mb-3">{{ formError }}</v-alert>
+          <v-alert v-if="formError" class="mb-3" type="error" variant="tonal">{{ formError }}</v-alert>
           <v-form ref="formRef">
             <v-select
               v-model="form.category"
-              label="Category"
-              :items="categories"
-              variant="outlined"
-              density="comfortable"
-              :rules="[r => !!r || 'Required']"
               class="mb-3"
+              density="comfortable"
+              :items="categories"
+              label="Category"
+              :rules="[r => !!r || 'Required']"
+              variant="outlined"
             />
             <v-text-field
               v-model="form.activity"
-              label="Activity title"
-              variant="outlined"
-              density="comfortable"
-              :rules="[r => !!r || 'Required']"
               class="mb-3"
+              density="comfortable"
+              label="Activity title"
+              :rules="[r => !!r || 'Required']"
+              variant="outlined"
             />
             <v-textarea
               v-model="form.description"
-              label="Description (optional)"
-              variant="outlined"
-              density="comfortable"
-              rows="2"
               class="mb-3"
+              density="comfortable"
+              label="Description (optional)"
+              rows="2"
+              variant="outlined"
             />
             <v-row>
               <v-col cols="6">
                 <v-text-field
                   v-model.number="form.plannedHours"
-                  label="Planned hours"
-                  type="number"
-                  min="0"
-                  step="0.5"
-                  variant="outlined"
                   density="comfortable"
+                  label="Planned hours"
+                  min="0"
                   :rules="[r => r >= 0 || 'Must be ≥ 0']"
+                  step="0.5"
+                  type="number"
+                  variant="outlined"
                 />
               </v-col>
               <v-col cols="6">
                 <v-text-field
                   v-model.number="form.actualHours"
-                  label="Actual hours"
-                  type="number"
-                  min="0"
-                  step="0.5"
-                  variant="outlined"
                   density="comfortable"
+                  label="Actual hours"
+                  min="0"
                   placeholder="Leave blank if not done"
+                  step="0.5"
+                  type="number"
+                  variant="outlined"
                 />
               </v-col>
             </v-row>
             <v-select
               v-model="form.status"
-              label="Status"
-              :items="statuses"
-              variant="outlined"
               density="comfortable"
+              :items="statuses"
+              label="Status"
               :rules="[r => !!r || 'Required']"
+              variant="outlined"
             />
           </v-form>
         </v-card-text>
@@ -186,151 +199,146 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, computed, onMounted } from 'vue'
-import { api, type WARActivity, type ActiveWeek } from '@/api'
-import { useAuthStore } from '@/stores/auth'
+  import { computed, onMounted, ref } from 'vue'
+  import { type ActiveWeek, api, type WARActivity } from '@/api'
 
-const auth = useAuthStore()
+  const weeks = ref<ActiveWeek[]>([])
+  const activities = ref<WARActivity[]>([])
+  const selectedWeekId = ref<number | null>(null)
+  const loading = ref(false)
+  const error = ref('')
 
-const weeks          = ref<ActiveWeek[]>([])
-const activities     = ref<WARActivity[]>([])
-const selectedWeekId = ref<number | null>(null)
-const loading        = ref(false)
-const error          = ref('')
+  const formDialog = ref(false)
+  const formRef = ref()
+  const formError = ref('')
+  const saving = ref(false)
+  const editing = ref<WARActivity | null>(null)
 
-const formDialog = ref(false)
-const formRef    = ref()
-const formError  = ref('')
-const saving     = ref(false)
-const editing    = ref<WARActivity | null>(null)
+  const deleteDialog = ref(false)
+  const deleting = ref(false)
+  const toDelete = ref<WARActivity | null>(null)
 
-const deleteDialog = ref(false)
-const deleting     = ref(false)
-const toDelete     = ref<WARActivity | null>(null)
-
-const blankForm = () => ({
-  category: '',
-  activity: '',
-  description: '',
-  plannedHours: 0,
-  actualHours: null as number | null,
-  status: 'IN_PROGRESS',
-})
-const form = ref(blankForm())
-
-const categories = [
-  'DEVELOPMENT', 'TESTING', 'BUGFIX', 'COMMUNICATION', 'DOCUMENTATION',
-  'DESIGN', 'PLANNING', 'LEARNING', 'DEPLOYMENT', 'SUPPORT', 'MISCELLANEOUS',
-]
-const statuses = ['IN_PROGRESS', 'UNDER_TESTING', 'DONE']
-
-const totalPlanned = computed(() => activities.value.reduce((s, a) => s + a.plannedHours, 0))
-const totalActual  = computed(() => activities.value.reduce((s, a) => s + (a.actualHours ?? 0), 0))
-
-function formatWeekLabel(w: ActiveWeek) {
-  return `Week of ${w.weekStart}${w.active ? '' : ' (inactive)'}`
-}
-
-function categoryColor(c: string): string {
-  const map: Record<string, string> = {
-    DEVELOPMENT: 'blue', TESTING: 'orange', BUGFIX: 'red', COMMUNICATION: 'purple',
-    DOCUMENTATION: 'teal', DESIGN: 'pink', PLANNING: 'indigo', LEARNING: 'cyan',
-    DEPLOYMENT: 'green', SUPPORT: 'amber', MISCELLANEOUS: 'grey',
+  function blankForm () {
+    return {
+      category: '',
+      activity: '',
+      description: '',
+      plannedHours: 0,
+      actualHours: null as number | null,
+      status: 'IN_PROGRESS',
+    }
   }
-  return map[c] ?? 'grey'
-}
+  const form = ref(blankForm())
 
-function statusColor(s: string): string {
-  const map: Record<string, string> = { IN_PROGRESS: 'blue', UNDER_TESTING: 'orange', DONE: 'success' }
-  return map[s] ?? 'grey'
-}
+  const categories = [
+    'DEVELOPMENT', 'TESTING', 'BUGFIX', 'COMMUNICATION', 'DOCUMENTATION',
+    'DESIGN', 'PLANNING', 'LEARNING', 'DEPLOYMENT', 'SUPPORT', 'MISCELLANEOUS',
+  ]
+  const statuses = ['IN_PROGRESS', 'UNDER_TESTING', 'DONE']
 
-async function loadActivities() {
-  if (!selectedWeekId.value) return
-  loading.value = true
-  error.value   = ''
-  try {
-    activities.value = await api.get<WARActivity[]>(`/war-activities?weekId=${selectedWeekId.value}`)
-  } catch (e: any) {
-    error.value = e.message
-  } finally {
-    loading.value = false
+  const totalPlanned = computed(() => activities.value.reduce((s, a) => s + a.plannedHours, 0))
+  const totalActual = computed(() => activities.value.reduce((s, a) => s + (a.actualHours ?? 0), 0))
+
+  function formatWeekLabel (w: ActiveWeek) {
+    return `Week of ${w.weekStart}${w.active ? '' : ' (inactive)'}`
   }
-}
 
-function openForm(activity?: WARActivity) {
-  formError.value = ''
-  editing.value   = activity ?? null
-  form.value      = activity
-    ? {
-        category:     activity.category,
-        activity:     activity.activity,
-        description:  activity.description ?? '',
+  function categoryColor (c: string): string {
+    const map: Record<string, string> = {
+      DEVELOPMENT: 'blue', TESTING: 'orange', BUGFIX: 'red', COMMUNICATION: 'purple',
+      DOCUMENTATION: 'teal', DESIGN: 'pink', PLANNING: 'indigo', LEARNING: 'cyan',
+      DEPLOYMENT: 'green', SUPPORT: 'amber', MISCELLANEOUS: 'grey',
+    }
+    return map[c] ?? 'grey'
+  }
+
+  function statusColor (s: string): string {
+    const map: Record<string, string> = { IN_PROGRESS: 'blue', UNDER_TESTING: 'orange', DONE: 'success' }
+    return map[s] ?? 'grey'
+  }
+
+  async function loadActivities () {
+    if (!selectedWeekId.value) return
+    loading.value = true
+    error.value = ''
+    try {
+      activities.value = await api.get<WARActivity[]>(`/war-activities?weekId=${selectedWeekId.value}`)
+    } catch (error_: any) {
+      error.value = error_.message
+    } finally {
+      loading.value = false
+    }
+  }
+
+  function openForm (activity?: WARActivity) {
+    formError.value = ''
+    editing.value = activity ?? null
+    form.value = activity
+      ? {
+        category: activity.category,
+        activity: activity.activity,
+        description: activity.description ?? '',
         plannedHours: activity.plannedHours,
-        actualHours:  activity.actualHours ?? null,
-        status:       activity.status,
+        actualHours: activity.actualHours ?? null,
+        status: activity.status,
       }
-    : blankForm()
-  formDialog.value = true
-}
-
-async function save() {
-  const { valid } = await formRef.value.validate()
-  if (!valid) return
-  saving.value   = true
-  formError.value = ''
-  try {
-    const payload = {
-      ...form.value,
-      weekId:      selectedWeekId.value,
-      actualHours: form.value.actualHours || null,
-    }
-    if (editing.value) {
-      await api.put(`/war-activities/${editing.value.id}`, payload)
-    } else {
-      await api.post('/war-activities', payload)
-    }
-    formDialog.value = false
-    await loadActivities()
-  } catch (e: any) {
-    formError.value = e.message
-  } finally {
-    saving.value = false
+      : blankForm()
+    formDialog.value = true
   }
-}
 
-function confirmDelete(a: WARActivity) {
-  toDelete.value     = a
-  deleteDialog.value = true
-}
-
-async function doDelete() {
-  if (!toDelete.value) return
-  deleting.value = true
-  try {
-    await api.delete(`/war-activities/${toDelete.value.id}`)
-    deleteDialog.value = false
-    await loadActivities()
-  } catch (e: any) {
-    error.value = e.message
-  } finally {
-    deleting.value = false
-  }
-}
-
-onMounted(async () => {
-  // Load weeks for this student's section — use the section's active weeks
-  const me = await api.get<any>('/users/me').catch(() => null)
-  if (me?.sectionId) {
-    // get all weeks (not just active) since students can submit WAR for any past week
-    const allWeeks = await api.get<ActiveWeek[]>(`/sections/${me.sectionId}/weeks`).catch(() => [])
-    // filter to past or current weeks only
-    const today = new Date().toISOString().split('T')[0]
-    weeks.value = allWeeks.filter(w => w.weekStart <= today)
-    if (weeks.value.length > 0) {
-      selectedWeekId.value = weeks.value[weeks.value.length - 1].id
+  async function save () {
+    const { valid } = await formRef.value.validate()
+    if (!valid) return
+    saving.value = true
+    formError.value = ''
+    try {
+      const payload = {
+        ...form.value,
+        weekId: selectedWeekId.value,
+        actualHours: form.value.actualHours || null,
+      }
+      await (editing.value ? api.put(`/war-activities/${editing.value.id}`, payload) : api.post('/war-activities', payload))
+      formDialog.value = false
       await loadActivities()
+    } catch (error_: any) {
+      formError.value = error_.message
+    } finally {
+      saving.value = false
     }
   }
-})
+
+  function confirmDelete (a: WARActivity) {
+    toDelete.value = a
+    deleteDialog.value = true
+  }
+
+  async function doDelete () {
+    if (!toDelete.value) return
+    deleting.value = true
+    try {
+      await api.delete(`/war-activities/${toDelete.value.id}`)
+      deleteDialog.value = false
+      await loadActivities()
+    } catch (error_: any) {
+      error.value = error_.message
+    } finally {
+      deleting.value = false
+    }
+  }
+
+  onMounted(async () => {
+    // Load weeks for this student's section — use the section's active weeks
+    const me = await api.get<any>('/users/me').catch(() => null)
+    if (me?.sectionId) {
+      // get all weeks (not just active) since students can submit WAR for any past week
+      const allWeeks = await api.get<ActiveWeek[]>(`/sections/${me.sectionId}/weeks`).catch(() => [])
+      // filter to past or current weeks only
+      const today = new Date().toISOString().split('T')[0]
+      weeks.value = allWeeks.filter(w => w.weekStart <= today)
+      if (weeks.value.length > 0) {
+        selectedWeekId.value = weeks.value.at(-1).id
+        await loadActivities()
+      }
+    }
+  })
 </script>

@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { ref, computed } from 'vue'
+import { computed, ref } from 'vue'
 import { api } from '@/api'
 
 export type UserRole = 'ADMIN' | 'INSTRUCTOR' | 'STUDENT'
@@ -18,19 +18,19 @@ export const useAuthStore = defineStore('auth', () => {
   )
 
   const isAuthenticated = computed(() => !!user.value)
-  const role            = computed(() => user.value?.role ?? null)
-  const fullName        = computed(() =>
+  const role = computed(() => user.value?.role ?? null)
+  const fullName = computed(() =>
     user.value ? `${user.value.firstName} ${user.value.lastName}` : '',
   )
 
-  async function login(email: string, password: string): Promise<void> {
+  async function login (email: string, password: string): Promise<void> {
     const data = await api.post<AuthUser>('/auth/login', { email, password })
     user.value = data
-    localStorage.setItem('pp_user',  JSON.stringify(data))
+    localStorage.setItem('pp_user', JSON.stringify(data))
     localStorage.setItem('pp_token', data.token)
   }
 
-  async function register(payload: {
+  async function register (payload: {
     token: string
     firstName: string
     lastName: string
@@ -40,11 +40,11 @@ export const useAuthStore = defineStore('auth', () => {
   }): Promise<void> {
     const data = await api.post<AuthUser>('/auth/register', payload)
     user.value = data
-    localStorage.setItem('pp_user',  JSON.stringify(data))
+    localStorage.setItem('pp_user', JSON.stringify(data))
     localStorage.setItem('pp_token', data.token)
   }
 
-  function logout(): void {
+  function logout (): void {
     user.value = null
     localStorage.removeItem('pp_user')
     localStorage.removeItem('pp_token')
