@@ -34,3 +34,39 @@ export const api = {
   patch:  <T>(path: string, data?: unknown)   => request<T>(path, { method: 'PATCH', body: data ? JSON.stringify(data) : undefined }),
   delete: <T>(path: string)                   => request<T>(path, { method: 'DELETE' }),
 }
+
+// ── Typed API helpers ────────────────────────────────────────────────────────
+
+export interface Section {
+  id: number; name: string; startDate: string; endDate: string
+  rubric: Rubric | null; teamNames: string[]
+}
+export interface Rubric {
+  id: number; name: string; criteria: Criterion[]
+}
+export interface Criterion {
+  id: number; name: string; description: string; maxScore: number; orderIndex: number
+}
+export interface Team {
+  id: number; name: string; sectionId: number; sectionName: string
+  studentNames: string[]; instructorNames: string[]
+}
+export interface User {
+  id: number; firstName: string; lastName: string; middleInitial?: string
+  email: string; role: string; active: boolean; registrationComplete: boolean
+  sectionId?: number; sectionName?: string; teamId?: number; teamName?: string
+}
+export interface ActiveWeek {
+  id: number; weekStart: string; active: boolean
+}
+export interface WARActivity {
+  id: number; category: string; activity: string; description?: string
+  plannedHours: number; actualHours?: number; status: string
+  weekId: number; weekStart: string; studentId: number; studentName: string
+}
+export interface PeerEvaluationReport {
+  weekId: number; studentId: number; studentName: string
+  evaluatorCount: number; overallGrade: number
+  criterionAverages: { criterionId: number; criterionName: string; averageScore: number; maxScore: number }[]
+  publicComments: string[]
+}

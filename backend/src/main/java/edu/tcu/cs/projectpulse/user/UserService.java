@@ -7,6 +7,7 @@ import edu.tcu.cs.projectpulse.invitation.InvitationTokenRepository;
 import edu.tcu.cs.projectpulse.section.Section;
 import edu.tcu.cs.projectpulse.section.SectionService;
 import edu.tcu.cs.projectpulse.user.dto.InviteRequest;
+import edu.tcu.cs.projectpulse.user.dto.UpdateAccountRequest;
 import edu.tcu.cs.projectpulse.user.dto.UserResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -14,6 +15,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -28,9 +31,39 @@ public class UserService {
     private final InvitationTokenRepository tokenRepository;
     private final SectionService sectionService;
     private final EmailService emailService;
+    private final PasswordEncoder passwordEncoder;
 
     @Value("${app.invitation.expiry-hours:72}")
     private int invitationExpiryHours;
+
+    // ── Own Account ──────────────────────────────────────────────────────────
+
+    /** Returns the current user's own profile (UC-26). */
+    @Transactional(readOnly = true)
+    public UserResponse getMe() {
+        return UserResponse.from(currentUser());
+    }
+
+    /** Students and instructors can edit their own name and password (UC-26). */
+    @Transactional
+    public UserResponse updateMe(UpdateAccountRequest request) {
+        AppUser user = currentUser();
+
+        if (request.newPassword() != null && !request.newPassword().isBlank()) {
+            if (!request.newPassword().equals(request.confirmPassword())) {
+                throw new IllegalArgumentException("Passwords do not match.");
+            }
+            user.setPasswordHash(passwordEncoder.encode(request.newPassword()));
+        }
+
+        user.setFirstName(request.firstName());
+        user.setLastName(request.lastName());
+        if (user.getRole() == UserRole.INSTRUCTOR && request.middleInitial() != null) {
+            user.setMiddleInitial(request.middleInitial());
+        }
+
+        return UserResponse.from(userRepository.save(user));
+    }
 
     // ── Find / View ───────────────────────────────────────────────────────────
 
@@ -196,9 +229,13 @@ public class UserService {
         return emails;
     }
 
-    private AppUser currentAdmin() {
+    private AppUser currentUser() {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         return userRepository.findByEmail(email)
-                .orElseThrow(() -> new ObjectNotFoundException("Current admin user not found."));
+                .orElseThrow(() -> new ObjectNotFoundException("Current user not found."));
+    }
+
+    private AppUser currentAdmin() {
+        return currentUser();
     }
 }

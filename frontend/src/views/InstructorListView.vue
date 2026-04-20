@@ -1,0 +1,185 @@
+<template>
+  <v-container class="pa-6" fluid>
+    <div class="d-flex align-center mb-6 ga-3">
+      <h1 class="text-h5 font-weight-bold flex-grow-1">Instructors</h1>
+      <v-btn color="primary" prepend-icon="mdi-email-plus" @click="inviteDialog = true">
+        Invite Instructors
+      </v-btn>
+    </div>
+
+    <!-- Filters -->
+    <v-row class="mb-2">
+      <v-col cols="12" sm="4">
+        <v-text-field v-model="filters.firstName" label="First name" variant="outlined" density="comfortable" clearable @update:model-value="load" />
+      </v-col>
+      <v-col cols="12" sm="4">
+        <v-text-field v-model="filters.lastName" label="Last name" variant="outlined" density="comfortable" clearable @update:model-value="load" />
+      </v-col>
+      <v-col cols="12" sm="4">
+        <v-select
+          v-model="filters.active"
+          label="Status"
+          :items="[{ title: 'All', value: null }, { title: 'Active', value: true }, { title: 'Inactive', value: false }]"
+          item-title="title"
+          item-value="value"
+          variant="outlined"
+          density="comfortable"
+          @update:model-value="load"
+        />
+      </v-col>
+    </v-row>
+
+    <v-alert v-if="error" type="error" variant="tonal" class="mb-4">{{ error }}</v-alert>
+
+    <v-progress-circular v-if="loading" indeterminate color="primary" class="d-block mx-auto my-8" />
+
+    <v-table v-else-if="instructors.length > 0" hover>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Status</th>
+          <th>Registration</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="inst in instructors" :key="inst.id">
+          <td>{{ inst.firstName }} {{ inst.middleInitial ? inst.middleInitial + '. ' : '' }}{{ inst.lastName }}</td>
+          <td>{{ inst.email }}</td>
+          <td>
+            <v-chip :color="inst.active ? 'success' : 'error'" size="small" variant="tonal">
+              {{ inst.active ? 'Active' : 'Inactive' }}
+            </v-chip>
+          </td>
+          <td>
+            <v-chip :color="inst.registrationComplete ? 'success' : 'warning'" size="small" variant="tonal">
+              {{ inst.registrationComplete ? 'Complete' : 'Pending' }}
+            </v-chip>
+          </td>
+          <td>
+            <v-btn
+              v-if="inst.active"
+              variant="text"
+              size="small"
+              color="warning"
+              :loading="actionId === inst.id"
+              @click="deactivate(inst)"
+            >
+              Deactivate
+            </v-btn>
+            <v-btn
+              v-else
+              variant="text"
+              size="small"
+              color="success"
+              :loading="actionId === inst.id"
+              @click="reactivate(inst)"
+            >
+              Reactivate
+            </v-btn>
+          </td>
+        </tr>
+      </tbody>
+    </v-table>
+
+    <v-alert v-else type="info" variant="tonal">No instructors found.</v-alert>
+
+    <!-- Invite dialog -->
+    <v-dialog v-model="inviteDialog" max-width="500">
+      <v-card rounded="lg">
+        <v-card-title class="pa-4">Invite Instructors</v-card-title>
+        <v-card-text class="px-4">
+          <v-alert v-if="inviteError" type="error" variant="tonal" class="mb-3">{{ inviteError }}</v-alert>
+          <v-alert v-if="inviteSuccess" type="success" variant="tonal" class="mb-3">{{ inviteSuccess }}</v-alert>
+          <v-textarea v-model="invite.emails" label="Email addresses (semicolon-separated)" variant="outlined" density="comfortable" rows="3" placeholder="prof@tcu.edu; prof2@tcu.edu" class="mb-3" />
+          <v-textarea v-model="invite.customMessage" label="Custom message (optional)" variant="outlined" density="comfortable" rows="2" />
+        </v-card-text>
+        <v-card-actions class="px-4 pb-4">
+          <v-spacer />
+          <v-btn variant="text" @click="inviteDialog = false">Cancel</v-btn>
+          <v-btn color="primary" :loading="inviting" @click="sendInvites">Send Invitations</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+  </v-container>
+</template>
+
+<script lang="ts" setup>
+import { ref, onMounted } from 'vue'
+import { api, type User } from '@/api'
+
+const instructors = ref<User[]>([])
+const loading     = ref(false)
+const error       = ref('')
+const actionId    = ref<number | null>(null)
+const filters     = ref({ firstName: '', lastName: '', active: null as boolean | null })
+
+const inviteDialog  = ref(false)
+const inviting      = ref(false)
+const inviteError   = ref('')
+const inviteSuccess = ref('')
+const invite        = ref({ emails: '', customMessage: '' })
+
+async function load() {
+  loading.value = true
+  error.value   = ''
+  try {
+    const p = new URLSearchParams()
+    if (filters.value.firstName)  p.set('firstName', filters.value.firstName)
+    if (filters.value.lastName)   p.set('lastName', filters.value.lastName)
+    if (filters.value.active !== null) p.set('active', String(filters.value.active))
+    const q = p.toString() ? `?${p}` : ''
+    instructors.value = await api.get<User[]>(`/instructors${q}`)
+  } catch (e: any) {
+    error.value = e.message
+  } finally {
+    loading.value = false
+  }
+}
+
+async function deactivate(inst: User) {
+  actionId.value = inst.id
+  try {
+    await api.patch(`/instructors/${inst.id}/deactivate`)
+    await load()
+  } catch (e: any) {
+    error.value = e.message
+  } finally {
+    actionId.value = null
+  }
+}
+
+async function reactivate(inst: User) {
+  actionId.value = inst.id
+  try {
+    await api.patch(`/instructors/${inst.id}/reactivate`)
+    await load()
+  } catch (e: any) {
+    error.value = e.message
+  } finally {
+    actionId.value = null
+  }
+}
+
+async function sendInvites() {
+  inviteError.value   = ''
+  inviteSuccess.value = ''
+  if (!invite.value.emails.trim()) {
+    inviteError.value = 'At least one email is required.'
+    return
+  }
+  inviting.value = true
+  try {
+    const res = await api.post<any>('/invitations/instructors', invite.value)
+    inviteSuccess.value = `${res.emailsSent} invitation(s) sent.`
+    invite.value = { emails: '', customMessage: '' }
+  } catch (e: any) {
+    inviteError.value = e.message
+  } finally {
+    inviting.value = false
+  }
+}
+
+onMounted(load)
+</script>

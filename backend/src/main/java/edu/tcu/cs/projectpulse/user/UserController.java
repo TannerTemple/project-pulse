@@ -1,6 +1,7 @@
 package edu.tcu.cs.projectpulse.user;
 
 import edu.tcu.cs.projectpulse.user.dto.InviteRequest;
+import edu.tcu.cs.projectpulse.user.dto.UpdateAccountRequest;
 import edu.tcu.cs.projectpulse.user.dto.UserResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +17,18 @@ import java.util.Map;
 public class UserController {
 
     private final UserService userService;
+
+    // ── Own Account (UC-26) ───────────────────────────────────────────────────
+
+    @GetMapping("/api/users/me")
+    public UserResponse getMe() {
+        return userService.getMe();
+    }
+
+    @PatchMapping("/api/users/me")
+    public UserResponse updateMe(@Valid @RequestBody UpdateAccountRequest request) {
+        return userService.updateMe(request);
+    }
 
     // ── Students ──────────────────────────────────────────────────────────────
 

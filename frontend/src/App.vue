@@ -43,6 +43,7 @@
             nav
           >
             <template #append>
+              <v-btn icon="mdi-account-cog" variant="text" size="small" :to="{ name: 'account' }" />
               <v-btn icon="mdi-logout" variant="text" size="small" @click="logout" />
             </template>
           </v-list-item>

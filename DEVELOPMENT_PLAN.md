@@ -52,9 +52,10 @@ Examples: `feature/uc-27-war-activities`, `feature/uc-28-peer-evaluation`
 - [ ] Controller tests: `RubricControllerTest`, `SectionControllerTest`
 
 ### Frontend
-- [ ] Rubric builder view (`RubricFormView.vue`)
-- [ ] Section list view (`SectionListView.vue`)
-- [ ] Section create/edit form (`SectionFormView.vue`)
+- [x] Rubric builder view (`RubricFormView.vue`)
+- [x] Rubric list view (`RubricListView.vue`)
+- [x] Section list view (`SectionListView.vue`)
+- [x] Section create/edit form (`SectionFormView.vue`)
 - [ ] Active weeks configurator (`ActiveWeekSetupView.vue`)
 
 ---
@@ -74,10 +75,10 @@ Examples: `feature/uc-27-war-activities`, `feature/uc-28-peer-evaluation`
 - [ ] Controller tests: `TeamControllerTest`
 
 ### Frontend
-- [ ] Team list view (`TeamListView.vue`)
-- [ ] Team create/edit form (`TeamFormView.vue`)
+- [x] Team list view (`TeamListView.vue`)
+- [x] Team create/edit form (`TeamFormView.vue`)
 - [ ] Team detail view with member roster (`TeamDetailView.vue`)
-- [ ] Delete confirmation dialog
+- [x] Delete confirmation dialog
 
 ---
 
@@ -104,11 +105,11 @@ Examples: `feature/uc-27-war-activities`, `feature/uc-28-peer-evaluation`
 - [ ] Controller tests: `UserControllerTest`
 
 ### Frontend
-- [ ] Student list view with invite modal (`StudentListView.vue`)
+- [x] Student list view with invite modal (`StudentListView.vue`)
 - [ ] Student detail view (`StudentDetailView.vue`)
-- [ ] Instructor list view with invite modal (`InstructorListView.vue`)
-- [ ] Instructor detail view with deactivate/reactivate (`InstructorDetailView.vue`)
-- [ ] Team assignment UI (drag-and-drop or select from list)
+- [x] Instructor list view with invite modal + deactivate/reactivate (`InstructorListView.vue`)
+- [ ] Instructor detail view (`InstructorDetailView.vue`)
+- [x] Team assignment UI (select from list in `TeamFormView.vue`)
 
 ---
 
@@ -119,22 +120,22 @@ Examples: `feature/uc-27-war-activities`, `feature/uc-28-peer-evaluation`
 
 ### Backend
 - [x] UC-25: POST `/api/auth/register` — set up student account *(done in auth layer)*
-- [ ] UC-26: PATCH `/api/users/me` — student edits own account
-- [ ] UC-27: CRUD `/api/war-activities` — manage WAR activities
+- [x] UC-26: PATCH `/api/users/me` — student edits own account
+- [x] UC-27: CRUD `/api/war-activities` — manage WAR activities
   - GET `/api/war-activities?weekId=` — list for a week
   - POST `/api/war-activities` — add activity
   - PUT `/api/war-activities/{id}` — edit activity
   - DELETE `/api/war-activities/{id}` — delete activity
-- [ ] Enforce: cannot select future active week
+- [x] Enforce: cannot select future active week
 - [ ] Unit tests: `WARActivityServiceTest`
 - [ ] Controller tests: `WARActivityControllerTest`
 
 ### Frontend
-- [ ] Account settings view (`AccountSettingsView.vue`)
-- [ ] WAR form view (`WARActivityView.vue`)
-  - Week selector (active weeks only, no future weeks)
+- [x] Account settings view (`AccountSettingsView.vue`)
+- [x] WAR form view (`WARActivityView.vue`)
+  - Week selector (past weeks only, no future weeks)
   - Activity list with add/edit/delete
-  - Inline edit or modal form
+  - Modal form
   - Category and status dropdowns
 
 ---
@@ -145,24 +146,25 @@ Examples: `feature/uc-27-war-activities`, `feature/uc-28-peer-evaluation`
 > Suggested branch: `feature/uc-28-29-peer-evaluation`
 
 ### Backend
-- [ ] UC-28: POST `/api/peer-evaluations` — submit peer evaluation
-  - Enforce BR-3: cannot edit after submission
-  - Enforce BR-4: only previous week, 1-week deadline
-  - Enforce: every team member must be evaluated
-- [ ] UC-29: GET `/api/peer-evaluations/me/report?weekId=` — own report
-  - Enforce BR-5: never expose evaluator identity or private comments
+- [x] UC-28: POST `/api/peer-evaluations` — submit peer evaluation
+  - [x] Enforce BR-3: cannot edit after submission
+  - [x] Enforce BR-4: only previous week, 1-week deadline
+  - [x] Enforce BR-2: week must be active
+  - [x] Enforce: evaluator and evaluatee must be teammates
+- [x] UC-29: GET `/api/peer-evaluations/me/report?weekId=` — own report
+  - [x] Enforce BR-5: never expose evaluator identity or private comments
 - [ ] Unit tests: `PeerEvaluationServiceTest`
 - [ ] Controller tests: `PeerEvaluationControllerTest`
 
 ### Frontend
-- [ ] Peer evaluation form (`PeerEvaluationView.vue`)
-  - One section per teammate
+- [x] Peer evaluation form (`PeerEvaluationView.vue`)
+  - One card per teammate
   - Integer score inputs per rubric criterion
   - Public/private comment fields
-  - Submit confirmation
-- [ ] My report view (`MyReportView.vue`)
+  - Submit per-teammate
+- [x] My report view (`MyReportView.vue`)
   - Week selector
-  - Average criterion scores table
+  - Average criterion scores with progress bars
   - Public comments display
   - Overall grade
 
