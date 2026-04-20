@@ -5,7 +5,7 @@
 
 ---
 
-## Overall Completion: ~65%
+## Overall Completion: ~80%
 
 | Area | Status | % Done |
 |---|---|---|
@@ -13,14 +13,14 @@
 | Auth / JWT / Spring Security | Complete | 100% |
 | Admin REST APIs | Complete | 100% |
 | Student REST APIs (UC-26–29) | Complete | 100% |
-| Instructor / Report APIs (UC-31–34) | Not started | 0% |
+| Instructor / Report APIs (UC-31–34) | Complete | 100% |
 | Frontend — Auth views | Complete | 100% |
-| Frontend — Admin views | Mostly complete | ~75% |
+| Frontend — Admin views | Mostly complete | ~80% |
 | Frontend — Student views | Complete | 100% |
-| Frontend — Instructor views | Not started | 0% |
+| Frontend — Instructor/Report views | Not started | 0% |
+| Unit + integration tests | Good coverage | ~70% |
 | Database (PostgreSQL) | Schema defined, not connected | ~10% |
 | Deployment (Azure) | CI/CD written, Azure not configured | ~15% |
-| Tests | Smoke test only | ~5% |
 
 ---
 
@@ -85,9 +85,8 @@ See `DEVELOPMENT_PLAN.md` for full endpoint list.
 
 ### High Priority
 - [ ] `ActiveWeekSetupView.vue` — admin configures active weeks per section
-- [ ] Instructor/Report backend APIs (UC-31–34)
-- [ ] Instructor frontend views (team WAR report, section peer eval report)
-- [ ] Unit + integration tests (service layer + controllers)
+- [ ] Instructor frontend views — `SectionPeerReportView.vue`, `TeamWARReportView.vue`, `StudentPeerReportView.vue`, `StudentWARReportView.vue`
+- [ ] TeamServiceTest + UserServiceTest unit tests
 
 ### Lower Priority
 - [ ] Student detail view
