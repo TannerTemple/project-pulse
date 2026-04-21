@@ -48,8 +48,10 @@ Examples: `feature/uc-27-war-activities`, `feature/uc-28-peer-evaluation`
 - [x] UC-4: POST `/api/sections` — create section (select rubric)
 - [x] UC-5: PUT `/api/sections/{id}` — edit section
 - [x] UC-6: POST `/api/sections/{id}/weeks` — set up active weeks
-- [ ] Unit tests: `RubricServiceTest`, `SectionServiceTest`, `ActiveWeekServiceTest`
-- [ ] Controller tests: `RubricControllerTest`, `SectionControllerTest`
+- [ ] Unit tests: `RubricServiceTest`, `ActiveWeekServiceTest`
+- [x] Unit tests: `SectionServiceTest` (7 tests)
+- [x] Controller tests: `SectionControllerTest` (5 tests)
+- [ ] Controller tests: `RubricControllerTest`
 
 ### Frontend
 - [x] Rubric builder view (`RubricFormView.vue`)
