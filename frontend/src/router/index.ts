@@ -50,6 +50,12 @@ const router = createRouter({
       meta: { roles: ['ADMIN'] },
     },
     {
+      path: '/sections/:id/weeks',
+      name: 'section-weeks',
+      component: () => import('@/views/ActiveWeekSetupView.vue'),
+      meta: { roles: ['ADMIN'] },
+    },
+    {
       path: '/teams',
       name: 'teams',
       component: () => import('@/views/TeamListView.vue'),
@@ -74,6 +80,12 @@ const router = createRouter({
       meta: { roles: ['ADMIN', 'INSTRUCTOR'] },
     },
     {
+      path: '/students/:id',
+      name: 'student-detail',
+      component: () => import('@/views/StudentDetailView.vue'),
+      meta: { roles: ['ADMIN', 'INSTRUCTOR'] },
+    },
+    {
       path: '/instructors',
       name: 'instructors',
       component: () => import('@/views/InstructorListView.vue'),
@@ -90,6 +102,20 @@ const router = createRouter({
       name: 'rubric-create',
       component: () => import('@/views/RubricFormView.vue'),
       meta: { roles: ['ADMIN'] },
+    },
+
+    // ── Instructor ────────────────────────────────────────────────────────────
+    {
+      path: '/reports/peer',
+      name: 'reports-peer',
+      component: () => import('@/views/SectionPeerReportView.vue'),
+      meta: { roles: ['ADMIN', 'INSTRUCTOR'] },
+    },
+    {
+      path: '/reports/war',
+      name: 'reports-war',
+      component: () => import('@/views/TeamWARReportView.vue'),
+      meta: { roles: ['ADMIN', 'INSTRUCTOR'] },
     },
 
     // ── Student ───────────────────────────────────────────────────────────────

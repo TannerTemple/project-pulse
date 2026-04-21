@@ -95,6 +95,8 @@
     { title: 'Students', icon: 'mdi-account-multiple', to: '/students' },
     { title: 'Instructors', icon: 'mdi-teach', to: '/instructors' },
     { title: 'Rubrics', icon: 'mdi-format-list-checks', to: '/rubrics' },
+    { title: 'WAR Reports', icon: 'mdi-chart-bar', to: '/reports/war' },
+    { title: 'Peer Reports', icon: 'mdi-star-outline', to: '/reports/peer' },
   ]
 
   const instructorNav = [

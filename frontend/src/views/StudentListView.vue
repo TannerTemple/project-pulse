@@ -61,7 +61,7 @@
           <th>Section</th>
           <th>Team</th>
           <th>Status</th>
-          <th v-if="auth.role === 'ADMIN'" />
+          <th />
         </tr>
       </thead>
       <tbody>
@@ -79,8 +79,15 @@
               {{ s.registrationComplete ? 'Active' : 'Pending' }}
             </v-chip>
           </td>
-          <td v-if="auth.role === 'ADMIN'">
+          <td>
             <v-btn
+              icon="mdi-eye"
+              size="small"
+              :to="{ name: 'student-detail', params: { id: s.id } }"
+              variant="text"
+            />
+            <v-btn
+              v-if="auth.role === 'ADMIN'"
               color="error"
               icon="mdi-delete"
               size="small"

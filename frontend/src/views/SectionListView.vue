@@ -67,6 +67,14 @@
             >
               Edit
             </v-btn>
+            <v-btn
+              prepend-icon="mdi-calendar-clock"
+              size="small"
+              :to="{ name: 'section-weeks', params: { id: section.id } }"
+              variant="tonal"
+            >
+              Weeks
+            </v-btn>
           </v-card-actions>
         </v-card>
       </v-col>

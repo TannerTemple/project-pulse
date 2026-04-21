@@ -336,7 +336,7 @@
       const today = new Date().toISOString().split('T')[0]
       weeks.value = allWeeks.filter(w => w.weekStart <= today)
       if (weeks.value.length > 0) {
-        selectedWeekId.value = weeks.value.at(-1).id
+        selectedWeekId.value = weeks.value.at(-1)!.id
         await loadActivities()
       }
     }

@@ -108,3 +108,75 @@ export interface PeerEvaluationReport {
   criterionAverages: { criterionId: number, criterionName: string, averageScore: number, maxScore: number }[]
   publicComments: string[]
 }
+
+// ── Report types (UC-31–34) ───────────────────────────────────────────────────
+
+export interface ScoreDetail {
+  criterionName: string
+  score: number
+}
+export interface EvaluatorDetail {
+  evaluatorId: number
+  evaluatorName: string
+  scores: ScoreDetail[]
+  publicComments: string | null
+  privateComments: string | null
+}
+export interface StudentPeerSummary {
+  studentId: number
+  studentName: string
+  grade: number
+  submitted: boolean
+  evaluations: EvaluatorDetail[]
+}
+export interface SectionPeerReport {
+  sectionId: number
+  sectionName: string
+  weekId: number
+  weekStart: string
+  students: StudentPeerSummary[]
+  nonSubmitters: string[]
+}
+export interface ActivityRow {
+  id: number
+  category: string
+  activity: string
+  description: string | null
+  plannedHours: number
+  actualHours: number | null
+  status: string
+}
+export interface StudentWAREntry {
+  studentId: number
+  studentName: string
+  activities: ActivityRow[]
+}
+export interface TeamWARReport {
+  teamId: number
+  teamName: string
+  weekId: number
+  weekStart: string
+  entries: StudentWAREntry[]
+  nonSubmitters: string[]
+}
+export interface StudentPeerWeekEntry {
+  weekId: number
+  weekStart: string
+  grade: number
+  evaluations: EvaluatorDetail[]
+}
+export interface StudentPeerRangeReport {
+  studentId: number
+  studentName: string
+  weeks: StudentPeerWeekEntry[]
+}
+export interface StudentWARWeekEntry {
+  weekId: number
+  weekStart: string
+  activities: ActivityRow[]
+}
+export interface StudentWARRangeReport {
+  studentId: number
+  studentName: string
+  weeks: StudentWARWeekEntry[]
+}
