@@ -59,13 +59,21 @@ export interface Criterion {
   maxScore: number
   orderIndex: number
 }
+export interface MemberSummary {
+  id: number
+  firstName: string
+  lastName: string
+  email: string
+}
 export interface Team {
   id: number
   name: string
+  description: string | null
+  websiteUrl: string | null
   sectionId: number
   sectionName: string
-  studentNames: string[]
-  instructorNames: string[]
+  students: MemberSummary[]
+  instructors: MemberSummary[]
 }
 export interface User {
   id: number

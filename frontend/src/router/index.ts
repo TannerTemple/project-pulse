@@ -92,6 +92,12 @@ const router = createRouter({
       meta: { roles: ['ADMIN'] },
     },
     {
+      path: '/instructors/:id',
+      name: 'instructor-detail',
+      component: () => import('@/views/InstructorDetailView.vue'),
+      meta: { roles: ['ADMIN'] },
+    },
+    {
       path: '/rubrics',
       name: 'rubrics',
       component: () => import('@/views/RubricListView.vue'),

@@ -73,6 +73,12 @@
           </td>
           <td>
             <v-btn
+              icon="mdi-eye"
+              size="small"
+              :to="{ name: 'instructor-detail', params: { id: inst.id } }"
+              variant="text"
+            />
+            <v-btn
               v-if="inst.active"
               color="warning"
               :loading="actionId === inst.id"
