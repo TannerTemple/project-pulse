@@ -18,6 +18,13 @@ async function request<T> (path: string, options: RequestInit = {}): Promise<T> 
     return undefined as T
   }
 
+  if (res.status === 401 || res.status === 403) {
+    localStorage.removeItem('pp_user')
+    localStorage.removeItem('pp_token')
+    window.location.href = '/login'
+    return undefined as T
+  }
+
   const body = await res.json().catch(() => null)
 
   if (!res.ok) {
