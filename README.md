@@ -66,3 +66,4 @@ npm run build        # production build → dist/
 npm run type-check   # TypeScript check
 npm run lint         # ESLint
 ```
+
