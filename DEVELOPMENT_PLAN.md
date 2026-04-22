@@ -48,17 +48,17 @@ Examples: `feature/uc-27-war-activities`, `feature/uc-28-peer-evaluation`
 - [x] UC-4: POST `/api/sections` — create section (select rubric)
 - [x] UC-5: PUT `/api/sections/{id}` — edit section
 - [x] UC-6: POST `/api/sections/{id}/weeks` — set up active weeks
-- [ ] Unit tests: `RubricServiceTest`, `ActiveWeekServiceTest`
+- [x] Unit tests: `RubricServiceTest`, `ActiveWeekServiceTest`
 - [x] Unit tests: `SectionServiceTest` (7 tests)
 - [x] Controller tests: `SectionControllerTest` (5 tests)
-- [ ] Controller tests: `RubricControllerTest`
+- [x] Controller tests: `RubricControllerTest`
 
 ### Frontend
 - [x] Rubric builder view (`RubricFormView.vue`)
 - [x] Rubric list view (`RubricListView.vue`)
 - [x] Section list view (`SectionListView.vue`)
 - [x] Section create/edit form (`SectionFormView.vue`)
-- [ ] Active weeks configurator (`ActiveWeekSetupView.vue`)
+- [x] Active weeks configurator (`ActiveWeekSetupView.vue`)
 
 ---
 
@@ -73,13 +73,12 @@ Examples: `feature/uc-27-war-activities`, `feature/uc-28-peer-evaluation`
 - [x] UC-9: POST `/api/teams` — create team
 - [x] UC-10: PUT `/api/teams/{id}` — edit team
 - [x] UC-14: DELETE `/api/teams/{id}` — delete team (cascade)
-- [ ] Unit tests: `TeamServiceTest`
-- [ ] Controller tests: `TeamControllerTest`
+- [x] Unit tests: `TeamServiceTest`
+- [x] Controller tests: `TeamControllerTest`
 
 ### Frontend
 - [x] Team list view (`TeamListView.vue`)
 - [x] Team create/edit form (`TeamFormView.vue`)
-- [ ] Team detail view with member roster (`TeamDetailView.vue`)
 - [x] Delete confirmation dialog
 
 ---
@@ -103,14 +102,14 @@ Examples: `feature/uc-27-war-activities`, `feature/uc-28-peer-evaluation`
 - [x] UC-22: GET `/api/instructors/{id}` — view instructor
 - [x] UC-23: PATCH `/api/instructors/{id}/deactivate` — deactivate
 - [x] UC-24: PATCH `/api/instructors/{id}/reactivate` — reactivate
-- [ ] Unit tests: `UserServiceTest`
-- [ ] Controller tests: `UserControllerTest`
+- [x] Unit tests: `UserServiceTest`
+- [x] Controller tests: `UserControllerTest`
 
 ### Frontend
 - [x] Student list view with invite modal (`StudentListView.vue`)
-- [ ] Student detail view (`StudentDetailView.vue`)
+- [x] Student detail view (`StudentDetailView.vue`)
 - [x] Instructor list view with invite modal + deactivate/reactivate (`InstructorListView.vue`)
-- [ ] Instructor detail view (`InstructorDetailView.vue`)
+- [x] Instructor detail view (`InstructorDetailView.vue`)
 - [x] Team assignment UI (select from list in `TeamFormView.vue`)
 
 ---
@@ -129,8 +128,8 @@ Examples: `feature/uc-27-war-activities`, `feature/uc-28-peer-evaluation`
   - PUT `/api/war-activities/{id}` — edit activity
   - DELETE `/api/war-activities/{id}` — delete activity
 - [x] Enforce: cannot select future active week
-- [ ] Unit tests: `WARActivityServiceTest`
-- [ ] Controller tests: `WARActivityControllerTest`
+- [x] Unit tests: `WARActivityServiceTest`
+- [x] Controller tests: `WARActivityControllerTest`
 
 ### Frontend
 - [x] Account settings view (`AccountSettingsView.vue`)
@@ -155,8 +154,8 @@ Examples: `feature/uc-27-war-activities`, `feature/uc-28-peer-evaluation`
   - [x] Enforce: evaluator and evaluatee must be teammates
 - [x] UC-29: GET `/api/peer-evaluations/me/report?weekId=` — own report
   - [x] Enforce BR-5: never expose evaluator identity or private comments
-- [ ] Unit tests: `PeerEvaluationServiceTest`
-- [ ] Controller tests: `PeerEvaluationControllerTest`
+- [x] Unit tests: `PeerEvaluationServiceTest`
+- [x] Controller tests: `PeerEvaluationControllerTest`
 
 ### Frontend
 - [x] Peer evaluation form (`PeerEvaluationView.vue`)
@@ -179,73 +178,212 @@ Examples: `feature/uc-27-war-activities`, `feature/uc-28-peer-evaluation`
 
 ### Backend
 - [x] UC-30: POST `/api/auth/register` — instructor account setup *(done in auth layer)*
-- [ ] UC-31: GET `/api/sections/{id}/peer-evaluation-report?weekId=` — section-wide report
-  - Implement grade algorithm (average of evaluators' total scores)
-  - Show who did NOT submit
-- [ ] UC-32: GET `/api/teams/{id}/war-report?weekId=` — team WAR report
-  - Show who did NOT submit
-- [ ] UC-33: GET `/api/students/{id}/peer-evaluation-report?start=&end=` — student report over range
-- [ ] UC-34: GET `/api/students/{id}/war-report?start=&end=` — student WAR report over range
-- [ ] Unit tests: `ReportServiceTest`
-- [ ] Controller tests: `ReportControllerTest`
+- [x] UC-31: GET `/api/sections/{id}/peer-evaluation-report?weekId=` — section-wide report
+- [x] UC-32: GET `/api/teams/{id}/war-report?weekId=` — team WAR report
+- [x] UC-33: GET `/api/students/{id}/peer-evaluation-report?start=&end=` — student report over range
+- [x] UC-34: GET `/api/students/{id}/war-report?start=&end=` — student WAR report over range
+- [x] Unit tests: `ReportServiceTest`
+- [x] Controller tests: `ReportControllerTest`
 
 ### Frontend
-- [ ] Section peer eval report view (`SectionPeerReportView.vue`)
-  - Week selector
-  - Table: student, grade, comments, commenter
-  - Drill-down modal for individual scores
-  - Missing submissions highlighted
-- [ ] Team WAR report view (`TeamWARReportView.vue`)
-  - Week selector
-  - Table: student, category, activity, hours, status
-- [ ] Student detail: peer eval tab (`StudentPeerReportView.vue`)
-- [ ] Student detail: WAR tab (`StudentWARReportView.vue`)
+- [x] Section peer eval report view (`SectionPeerReportView.vue`)
+- [x] Team WAR report view (`TeamWARReportView.vue`)
+- [x] Student detail view with peer eval + WAR history (`StudentDetailView.vue`)
 
 ---
 
 ## Phase 7 — Testing & Polish
 
-> All branches merged into main. One final quality pass.
+> Branch: `feature/testing-polish` (branch off main after the big PR merges)
+> Owner: Tanner
 
-- [ ] Achieve 80%+ service layer test coverage
-- [ ] Every controller endpoint has ≥1 happy + ≥1 error test
-- [ ] Auth integration test (login, register, token validation)
-- [ ] End-to-end smoke test: create section → invite student → submit WAR → submit eval → generate report
-- [ ] Fix any Vuetify console warnings
+### Remaining tests to write
+
+- [x] `ActiveWeekServiceTest` — 5 tests (setup, inactive marking, delete-before-regen, invalid section)
+- [x] `RubricControllerTest` — 6 tests (findAll, findById, create happy + duplicate)
+- [x] `TeamControllerTest` — 11 tests (CRUD, assign/remove students)
+- [x] `UserControllerTest` — 14 tests (students, instructors, invite, deactivate, reactivate)
+- [x] `ReportServiceTest` — 13 tests (all 4 report methods, date range filtering, non-submitter logic)
+
+### Final polish
+
+- [ ] End-to-end smoke: create section → invite student → submit WAR → eval → generate report
 - [ ] Responsive layout check (mobile + desktop)
+- [ ] Fix any Vuetify console warnings
 - [ ] Update `STATUS.md` to reflect 100% completion
 
 ---
 
-## Phase 8 — Deployment
+## Phase 8 — Database & Cloud Deployment
 
-> Requires Azure subscription.
+> **Note:** The deployment target may be **MySQL on AWS** instead of PostgreSQL on Azure.
+> The Spring Boot app is database-agnostic at the service layer — only the JDBC driver,
+> dialect, and connection URL change. The steps below show both paths; the team should
+> confirm which cloud/DB they are using before provisioning.
+>
+> **Status:** CI/CD workflows already exist in `.github/workflows/`. The pipeline
+> deploys to Azure on every merge to `main`. If switching to AWS, the CD workflow
+> will need to be updated (e.g., deploy to Elastic Beanstalk or App Runner instead).
 
-- [ ] Provision Azure Database for PostgreSQL
-- [ ] Provision Azure App Service (Java 21)
-- [ ] Set GitHub secrets: `AZURE_WEBAPP_NAME`, `AZURE_WEBAPP_PUBLISH_PROFILE`
-- [ ] Set Azure App Service env vars:
-  - `SPRING_PROFILES_ACTIVE=prod`
-  - `DB_URL`, `DB_USERNAME`, `DB_PASSWORD`
-  - `JWT_SECRET` (generate a real 256-bit key)
-  - `MAIL_USERNAME`, `MAIL_PASSWORD`
-  - `APP_BASE_URL` (live URL)
-- [ ] Update `SecurityConfig` CORS to allow the live Azure URL
-- [ ] Trigger CD pipeline and verify live URL
-- [ ] Test login on production URL
+### Branch strategy
+
+```
+main  ←  feature/domain-model (merge this first — PR already open)
+main  ←  feature/testing-polish (Tanner — remaining tests)
+main  ←  feature/postgres-setup (Partner 1)
+main  ←  feature/azure-deploy   (Partner 2)
+```
+
+Partners branch off `main` independently. No dependency between them until
+Azure App Service is provisioned (Partner 2 needs the DB URL from Partner 1).
 
 ---
 
-## Work Split Suggestion
+### 8-A  PostgreSQL Setup (Partner 1)
 
-| Teammate | Phases |
+**Goal:** give the app a persistent database it can connect to in production.
+
+#### Step 1 — Provision the database on Azure
+
+1. In the Azure Portal, create a **Azure Database for PostgreSQL — Flexible Server**.
+2. Choose the cheapest tier (Burstable B1ms is fine for a course project).
+3. Set a database name, admin username, and password. Save these — they become env vars.
+4. Under **Networking**, add a firewall rule to allow Azure services (and your own IP for local testing).
+
+#### Step 2 — Create `application-prod.properties`
+
+Create this file at `backend/src/main/resources/application-prod.properties`:
+
+```properties
+# PostgreSQL connection (values injected via Azure App Service env vars)
+spring.datasource.url=${DB_URL}
+spring.datasource.username=${DB_USERNAME}
+spring.datasource.password=${DB_PASSWORD}
+spring.datasource.driver-class-name=org.postgresql.Driver
+
+spring.jpa.database-platform=org.hibernate.dialect.PostgreSQLDialect
+spring.jpa.hibernate.ddl-auto=validate
+
+# H2 console must be OFF in prod
+spring.h2.console.enabled=false
+
+# Email (already in base properties but needs prod values)
+spring.mail.username=${MAIL_USERNAME}
+spring.mail.password=${MAIL_PASSWORD}
+
+# JWT
+security.jwt.secret-key=${JWT_SECRET}
+
+# App base URL (used in invite emails)
+app.base-url=${APP_BASE_URL}
+```
+
+The `${VAR}` placeholders are resolved by Spring from environment variables at
+runtime — you never hardcode secrets in a properties file.
+
+#### Step 3 — Let Hibernate create the schema on first deploy
+
+Temporarily set `ddl-auto=create` in `application-prod.properties`, deploy once,
+then switch back to `ddl-auto=validate` for all future deploys. This lets
+Hibernate generate the initial tables from the JPA entities.
+
+Alternatively, use **Flyway**:
+1. Add `spring-boot-starter-data-jpa` Flyway dependency to `pom.xml`.
+2. Create `backend/src/main/resources/db/migration/V1__init.sql` with the schema.
+3. Set `spring.flyway.enabled=true` in prod properties.
+
+#### Step 4 — Test locally against PostgreSQL
+
+```bash
+# Install PostgreSQL locally if not already present
+# Create a local database named projectpulse
+
+export SPRING_PROFILES_ACTIVE=prod
+export DB_URL=jdbc:postgresql://localhost:5432/projectpulse
+export DB_USERNAME=youruser
+export DB_PASSWORD=yourpassword
+export JWT_SECRET=any-256-bit-string-for-local-testing
+export MAIL_USERNAME=yourgmail@gmail.com
+export MAIL_PASSWORD=your-app-password
+export APP_BASE_URL=http://localhost:3000
+
+cd backend && ./mvnw spring-boot:run
+```
+
+If the app starts and `/api/auth/login` returns a token, the DB connection works.
+
+---
+
+### 8-B  Azure App Service Deployment (Partner 2)
+
+**Goal:** deploy the Spring Boot JAR to Azure and expose it at a public URL.
+The GitHub Actions workflow (`.github/workflows/`) already handles the build and
+deploy steps — you just need to provision the Azure resources and set the secrets.
+
+#### Step 1 — Provision Azure App Service
+
+1. In the Azure Portal, create an **App Service**.
+2. Runtime stack: **Java 21**, OS: **Linux**.
+3. Region: same as the PostgreSQL server to avoid cross-region latency.
+4. Download the **Publish Profile** from the App Service overview page — you'll need it for GitHub.
+
+#### Step 2 — Set GitHub secrets
+
+In the GitHub repo → **Settings → Secrets and variables → Actions**, add:
+
+| Secret name | Value |
 |---|---|
-| **Tanner** | Phase 4 (Student WAR) + Phase 5 (Peer Eval) |
-| **Teammate 2** | Phase 6 (Instructor Reports) + Phase 7 (Testing) |
-| **Teammate 3** | Phase 1 frontend + Phase 2 frontend + Phase 3 frontend + Phase 8 (Deployment) |
+| `AZURE_WEBAPP_NAME` | The App Service name (e.g. `project-pulse-app`) |
+| `AZURE_WEBAPP_PUBLISH_PROFILE` | Paste the full XML content of the publish profile |
 
-All phases have independent backend + frontend work. No blocking dependencies
-between teammates after Phase 0 is merged.
+#### Step 3 — Set App Service environment variables
+
+In the Azure Portal → App Service → **Configuration → Application settings**, add:
+
+| Key | Value |
+|---|---|
+| `SPRING_PROFILES_ACTIVE` | `prod` |
+| `DB_URL` | `jdbc:postgresql://<server>.postgres.database.azure.com:5432/<dbname>` |
+| `DB_USERNAME` | The PostgreSQL admin username |
+| `DB_PASSWORD` | The PostgreSQL admin password |
+| `JWT_SECRET` | A random 256-bit (32-byte) base64 string — generate with `openssl rand -base64 32` |
+| `MAIL_USERNAME` | Gmail address used for invite emails |
+| `MAIL_PASSWORD` | Gmail app password (not your account password) |
+| `APP_BASE_URL` | The live Azure URL, e.g. `https://project-pulse-app.azurewebsites.net` |
+
+#### Step 4 — Update CORS in SecurityConfig
+
+Open `backend/src/main/java/edu/tcu/cs/projectpulse/auth/SecurityConfig.java` and
+add the live Azure frontend URL to the CORS allowed origins list alongside
+`http://localhost:3000`. The static frontend (Vite build) is served from the same
+App Service, so the origin is the same as `APP_BASE_URL`.
+
+#### Step 5 — Trigger the pipeline and verify
+
+1. Merge any open PR to `main` — the GitHub Actions CD job fires automatically.
+2. Watch the Actions tab for a green checkmark.
+3. Visit `https://<your-app>.azurewebsites.net/api/auth/login` — should return 405 (wrong method) meaning the app is up.
+4. Test full login from the frontend URL.
+
+---
+
+### 8-C  Recommended execution order
+
+```
+1. Merge feature/domain-model PR → main           [Tanner, now]
+2. Branch feature/testing-polish off main          [Tanner]
+   Write remaining 5 test classes → PR → main
+3. Branch feature/postgres-setup off main          [Partner 1, parallel]
+   Create application-prod.properties → PR → main
+4. Branch feature/azure-deploy off main            [Partner 2, parallel with 3]
+   Provision App Service, set secrets → PR → main
+5. Partner 2 sets DB env vars (needs Partner 1's DB URL)
+6. Trigger CD pipeline → verify live URL           [all]
+7. End-to-end smoke test on production             [all]
+```
+
+Steps 2, 3, and 4 are fully independent — all three can proceed in parallel
+after step 1 merges.
 
 ---
 

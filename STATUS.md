@@ -1,11 +1,11 @@
 # Project Pulse — Development Status
 
-> Last updated: 2026-04-20
+> Last updated: 2026-04-22
 > Active branch: `feature/domain-model` (PR open → main)
 
 ---
 
-## Overall Completion: ~80%
+## Overall Completion: ~95%
 
 | Area | Status | % Done |
 |---|---|---|
@@ -15,12 +15,12 @@
 | Student REST APIs (UC-26–29) | Complete | 100% |
 | Instructor / Report APIs (UC-31–34) | Complete | 100% |
 | Frontend — Auth views | Complete | 100% |
-| Frontend — Admin views | Mostly complete | ~80% |
+| Frontend — Admin views | Complete | 100% |
 | Frontend — Student views | Complete | 100% |
-| Frontend — Instructor/Report views | Not started | 0% |
-| Unit + integration tests | Partial | ~40% |
-| Database (PostgreSQL prod) | Schema defined, not connected | ~10% |
-| Deployment (Azure) | CI/CD written, Azure not configured | ~15% |
+| Frontend — Instructor/Report views | Complete | 100% |
+| Unit + integration tests | Complete | ~95% |
+| Database (MySQL/PostgreSQL prod) | Schema defined, not connected | ~10% |
+| Deployment (AWS/Azure) | CI/CD written, cloud not configured | ~15% |
 
 ---
 
@@ -67,51 +67,55 @@ Business rules enforced:
 - `GET /api/students/{id}/peer-evaluation-report?start=&end=` — student peer history (UC-33)
 - `GET /api/students/{id}/war-report?start=&end=` — student WAR history (UC-34)
 
-### Frontend — Auth Views (Complete)
+### Frontend — All Views (Complete)
+All 20 views exist and are wired to the router:
+
+**Auth**
 - `LoginView.vue` — email + password → JWT stored in localStorage
 - `RegisterView.vue` — token-based first-time account setup
 
-### Frontend — Admin Views (~80% Complete)
+**Admin**
 - `DashboardView.vue` — role-aware quick-action cards
 - `SectionListView.vue` + `SectionFormView.vue` — search, create, edit sections
+- `ActiveWeekSetupView.vue` — admin opens/closes weeks for a section
 - `TeamListView.vue` + `TeamFormView.vue` — search, create, edit teams; assign students + instructors
-- `StudentListView.vue` — search students, email invite modal, delete
-- `InstructorListView.vue` — search instructors, email invite modal, deactivate/reactivate
+- `StudentListView.vue` + `StudentDetailView.vue` — search students, invite, delete, view detail
+- `InstructorListView.vue` + `InstructorDetailView.vue` — search instructors, invite, deactivate/reactivate, view detail
 - `RubricListView.vue` + `RubricFormView.vue` — create rubric with ordered criteria
 
-**Missing:** `ActiveWeekSetupView.vue` (critical — blocks peer eval flow), student detail, instructor detail
-
-### Frontend — Student Views (Complete)
+**Student**
 - `AccountSettingsView.vue` — update name and password
 - `WARActivityView.vue` — week selector, CRUD activity cards, planned vs. actual hours summary
 - `PeerEvaluationView.vue` — per-teammate cards, rubric criterion scoring, public + private comments
 - `MyReportView.vue` — overall grade, per-criterion averages with progress bars, public feedback
 
-### Tests (Partial)
-32 tests passing. Coverage exists for:
-- `SectionServiceTest` (7 tests) + `SectionControllerTest` (5 tests)
-- `WARActivityServiceTest` (6 tests) + `WARActivityControllerTest` (6 tests)
-- `PeerEvaluationServiceTest` (6 tests)
-- `ProjectpulseApplicationTests` — context loads smoke test
+**Instructor / Reports**
+- `SectionPeerReportView.vue` — section-wide peer eval grades by week
+- `TeamWARReportView.vue` — team WAR submissions by week
+
+### Tests (119 tests — all passing)
+Full coverage across all feature packages:
+- `SectionServiceTest` (7) + `SectionControllerTest` (6)
+- `WARActivityServiceTest` (6) + `WARActivityControllerTest` (6)
+- `PeerEvaluationServiceTest` (6) + `PeerEvaluationControllerTest` (4)
+- `RubricServiceTest` (5) + `RubricControllerTest` (6)
+- `TeamServiceTest` (10) + `TeamControllerTest` (11)
+- `UserServiceTest` (13) + `UserControllerTest` (14)
+- `ActiveWeekServiceTest` (5)
+- `ReportServiceTest` (13) + `ReportControllerTest` (6)
+- `ProjectpulseApplicationTests` (1) — context loads smoke test
 
 ---
 
 ## What Still Needs to Be Done
 
-### Tanner — Next Up
-- [ ] `ActiveWeekSetupView.vue` — admin opens/closes weeks (**blocks testing the student eval flow**)
-- [ ] `SectionPeerReportView.vue` — instructor views section-wide peer eval grades
-- [ ] `TeamWARReportView.vue` — instructor views team's WAR submissions for a week
-- [ ] `StudentDetailView.vue` — click into a student from the student list
-- [ ] `InstructorDetailView.vue` — click into an instructor from the instructor list
-
-### Partner 1 — PostgreSQL
+### Partner 1 — Database (MySQL or PostgreSQL)
 - [ ] Provision Azure Database for PostgreSQL (Flexible Server)
 - [ ] Add `application-prod.properties` with `spring.datasource.*` pointing to Azure DB
 - [ ] Set `ddl-auto=validate` and run initial schema via `schema.sql` or Flyway
 - [ ] Test locally with `SPRING_PROFILES_ACTIVE=prod` and a local PostgreSQL instance
 
-### Partner 2 — Azure Deployment
+### Partner 2 — Cloud Deployment (AWS or Azure)
 - [ ] Provision Azure App Service (Java 21, Linux)
 - [ ] Set GitHub secrets: `AZURE_WEBAPP_NAME`, `AZURE_WEBAPP_PUBLISH_PROFILE`
 - [ ] Set App Service env vars: `SPRING_PROFILES_ACTIVE`, `DB_URL`, `DB_USERNAME`,
@@ -119,18 +123,15 @@ Business rules enforced:
 - [ ] Update `SecurityConfig` CORS to allow the live Azure URL
 - [ ] Trigger CD pipeline, verify app starts, test login at production URL
 
-### Phase 7 — Testing & Polish (After above is done)
-- [ ] `RubricServiceTest`, `TeamServiceTest`, `UserServiceTest`
-- [ ] `PeerEvaluationControllerTest`, `ReportServiceTest`, `ReportControllerTest`
+### Phase 7 — Final Polish (After DB/Azure is done)
 - [ ] End-to-end smoke: create section → invite student → submit WAR → eval → generate report
 - [ ] Responsive layout check
 - [ ] Fix any Vuetify console warnings
+- [ ] Update `STATUS.md` to reflect 100% completion
 
 ---
 
 ## Known Issues / Gaps
-- `ActiveWeekSetupView.vue` missing — without it, an admin cannot open a week, so students
-  cannot submit peer evaluations (the backend enforces this; the UI just doesn't expose it yet)
 - Team edit mode assigns new members but does not remove existing ones — removal requires
   a separate delete call via the existing individual-remove endpoints
 - WAR categories/statuses are hardcoded strings in the frontend dropdowns; ideally served from backend
