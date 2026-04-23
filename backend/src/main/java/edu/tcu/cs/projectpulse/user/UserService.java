@@ -4,12 +4,15 @@ import edu.tcu.cs.projectpulse.common.exception.ObjectNotFoundException;
 import edu.tcu.cs.projectpulse.email.EmailService;
 import edu.tcu.cs.projectpulse.invitation.InvitationToken;
 import edu.tcu.cs.projectpulse.invitation.InvitationTokenRepository;
+import edu.tcu.cs.projectpulse.peerevaluation.PeerEvaluationRepository;
 import edu.tcu.cs.projectpulse.section.Section;
 import edu.tcu.cs.projectpulse.section.SectionService;
 import edu.tcu.cs.projectpulse.user.dto.InviteRequest;
 import edu.tcu.cs.projectpulse.user.dto.UpdateAccountRequest;
 import edu.tcu.cs.projectpulse.user.dto.UserResponse;
+import edu.tcu.cs.projectpulse.war.WARActivityRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -23,18 +26,24 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserService {
 
     private final UserRepository userRepository;
     private final InvitationTokenRepository tokenRepository;
+    private final WARActivityRepository warRepository;
+    private final PeerEvaluationRepository evalRepository;
     private final SectionService sectionService;
     private final EmailService emailService;
     private final PasswordEncoder passwordEncoder;
 
     @Value("${app.invitation.expiry-hours:72}")
     private int invitationExpiryHours;
+
+    @Value("${app.base-url:http://localhost:3000}")
+    private String baseUrl;
 
     // ── Own Account ──────────────────────────────────────────────────────────
 
@@ -189,6 +198,8 @@ public class UserService {
         if (student.getRole() != UserRole.STUDENT) {
             throw new IllegalArgumentException("This operation is only valid for students.");
         }
+        warRepository.deleteByStudentId(id);
+        evalRepository.deleteByEvaluatorIdOrEvaluateeId(id, id);
         userRepository.delete(student);
     }
 
@@ -209,6 +220,7 @@ public class UserService {
         token.setCreatedAt(LocalDateTime.now());
         token.setExpiresAt(LocalDateTime.now().plusHours(invitationExpiryHours));
         tokenRepository.save(token);
+        log.info("[DEV] Registration link for {}: {}/register?token={}", email, baseUrl, token.getToken());
         return token.getToken();
     }
 

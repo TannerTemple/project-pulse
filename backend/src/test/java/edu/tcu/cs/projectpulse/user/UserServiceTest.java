@@ -3,9 +3,11 @@ package edu.tcu.cs.projectpulse.user;
 import edu.tcu.cs.projectpulse.common.exception.ObjectNotFoundException;
 import edu.tcu.cs.projectpulse.email.EmailService;
 import edu.tcu.cs.projectpulse.invitation.InvitationTokenRepository;
+import edu.tcu.cs.projectpulse.peerevaluation.PeerEvaluationRepository;
 import edu.tcu.cs.projectpulse.section.SectionService;
 import edu.tcu.cs.projectpulse.user.dto.UpdateAccountRequest;
 import edu.tcu.cs.projectpulse.user.dto.UserResponse;
+import edu.tcu.cs.projectpulse.war.WARActivityRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -31,6 +33,8 @@ class UserServiceTest {
 
     @Mock UserRepository userRepository;
     @Mock InvitationTokenRepository tokenRepository;
+    @Mock WARActivityRepository warRepository;
+    @Mock PeerEvaluationRepository evalRepository;
     @Mock SectionService sectionService;
     @Mock EmailService emailService;
     @Mock PasswordEncoder passwordEncoder;
@@ -194,11 +198,13 @@ class UserServiceTest {
     // ── deleteStudent ─────────────────────────────────────────────────────────
 
     @Test
-    void deleteStudent_givenValidStudent_deletesUser() {
+    void deleteStudent_givenValidStudent_deletesUserAndCascades() {
         given(userRepository.findById(1L)).willReturn(Optional.of(student));
 
         userService.deleteStudent(1L);
 
+        then(warRepository).should().deleteByStudentId(1L);
+        then(evalRepository).should().deleteByEvaluatorIdOrEvaluateeId(1L, 1L);
         then(userRepository).should().delete(student);
     }
 

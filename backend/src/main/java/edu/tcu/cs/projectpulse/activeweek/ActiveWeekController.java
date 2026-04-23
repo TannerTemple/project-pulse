@@ -16,7 +16,7 @@ public class ActiveWeekController {
     private final ActiveWeekService activeWeekService;
 
     @GetMapping
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN','INSTRUCTOR','STUDENT')")
     public List<ActiveWeek> findAll(@PathVariable Long sectionId) {
         return activeWeekService.findBySectionId(sectionId);
     }

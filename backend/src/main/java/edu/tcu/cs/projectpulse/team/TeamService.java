@@ -45,7 +45,7 @@ public class TeamService {
                 .toList();
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN','INSTRUCTOR')")
+    @PreAuthorize("hasAnyRole('ADMIN','INSTRUCTOR','STUDENT')")
     @Transactional(readOnly = true)
     public TeamResponse findById(Long id) {
         return TeamResponse.from(getTeamOrThrow(id));
@@ -99,15 +99,15 @@ public class TeamService {
     @PreAuthorize("hasRole('ADMIN')")
     @Transactional
     public void removeStudent(Long teamId, Long studentId) {
-        getTeamOrThrow(teamId);
+        Team team = getTeamOrThrow(teamId);
         AppUser student = getUserOrThrow(studentId);
         if (student.getTeam() == null || !student.getTeam().getId().equals(teamId)) {
             throw new IllegalArgumentException("Student is not a member of this team.");
         }
+        String teamName = team.getName();
         student.setTeam(null);
         userRepository.save(student);
-        emailService.sendTeamRemoval(student.getEmail(), student.getFirstName(),
-                student.getTeam() != null ? student.getTeam().getName() : "your team");
+        emailService.sendTeamRemoval(student.getEmail(), student.getFirstName(), teamName);
     }
 
     /** Assigns instructors to a team (UC-19). */

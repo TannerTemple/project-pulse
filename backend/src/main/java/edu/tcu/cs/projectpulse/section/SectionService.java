@@ -19,7 +19,7 @@ public class SectionService {
     private final SectionRepository sectionRepository;
     private final RubricRepository rubricRepository;
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN','INSTRUCTOR','STUDENT')")
     @Transactional(readOnly = true)
     public List<SectionResponse> findAll(String name) {
         List<Section> results = (name != null && !name.isBlank())
@@ -31,7 +31,7 @@ public class SectionService {
                 .toList();
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN','INSTRUCTOR','STUDENT')")
     @Transactional(readOnly = true)
     public SectionResponse findById(Long id) {
         return SectionResponse.from(getSectionOrThrow(id));

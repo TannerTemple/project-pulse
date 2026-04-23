@@ -19,13 +19,13 @@ public class SectionController {
     private final SectionService sectionService;
 
     @GetMapping
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN','INSTRUCTOR','STUDENT')")
     public List<SectionResponse> findAll(@RequestParam(required = false) String name) {
         return sectionService.findAll(name);
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN','INSTRUCTOR','STUDENT')")
     public SectionResponse findById(@PathVariable Long id) {
         return sectionService.findById(id);
     }

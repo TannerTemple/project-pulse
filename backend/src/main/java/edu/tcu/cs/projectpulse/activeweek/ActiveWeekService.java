@@ -21,7 +21,7 @@ public class ActiveWeekService {
     private final ActiveWeekRepository activeWeekRepository;
     private final SectionService sectionService;
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN','INSTRUCTOR','STUDENT')")
     @Transactional(readOnly = true)
     public List<ActiveWeek> findBySectionId(Long sectionId) {
         return activeWeekRepository.findBySectionIdOrderByWeekStartAsc(sectionId);
