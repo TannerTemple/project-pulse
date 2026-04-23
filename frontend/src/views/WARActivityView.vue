@@ -96,7 +96,7 @@
             <div class="text-caption">Actual hours</div>
           </v-col>
           <v-col class="text-center" cols="6" sm="3">
-            <div class="text-h6">{{ activities.filter(a => a.status === 'COMPLETED').length }}</div>
+            <div class="text-h6">{{ activities.filter(a => a.status === 'DONE').length }}</div>
             <div class="text-caption">Completed</div>
           </v-col>
           <v-col class="text-center" cols="6" sm="3">

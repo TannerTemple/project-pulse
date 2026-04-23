@@ -157,8 +157,8 @@ router.beforeEach(to => {
     return { name: 'login' }
   }
 
-  // Redirect already-logged-in users away from login/register
-  if (to.meta.public && auth.isAuthenticated) {
+  // Redirect already-logged-in users away from login (but NOT register — invitation links must work)
+  if (to.meta.public && auth.isAuthenticated && to.name !== 'register') {
     return { name: 'dashboard' }
   }
 
