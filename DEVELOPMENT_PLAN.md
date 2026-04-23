@@ -387,6 +387,35 @@ after step 1 merges.
 
 ---
 
+## What Still Needs to Be Done
+
+### Tanner
+
+- [ ] Merge `feature/domain-model` → `main` via PR *(doing now)*
+- [ ] Add live Azure/AWS frontend URL to CORS in `SecurityConfig.java` once partners have it
+- [ ] End-to-end smoke test on production (create section → invite student → WAR → peer eval → report)
+- [ ] Update `STATUS.md` to 100% complete
+
+### Partner 1 — Database
+
+- [ ] Confirm database target: Azure PostgreSQL or AWS MySQL
+- [ ] Provision the database server
+- [ ] Create `backend/src/main/resources/application-prod.properties` (see Phase 8-A)
+- [ ] Add the JDBC driver dependency to `pom.xml` (PostgreSQL driver is already there; add `mysql-connector-j` if using MySQL)
+- [ ] Share `DB_URL`, `DB_USERNAME`, `DB_PASSWORD` with Partner 2 for Azure env vars
+- [ ] Open PR → `main`
+
+### Partner 2 — Deployment
+
+- [ ] Provision Azure App Service (Java 21, Linux)
+- [ ] Set all GitHub secrets: `AZURE_WEBAPP_NAME`, `AZURE_WEBAPP_PUBLISH_PROFILE`
+- [ ] Set all App Service environment variables (see Phase 8-B table)
+- [ ] Trigger CD pipeline (merge to `main` → Actions auto-deploys)
+- [ ] Verify `GET /api/actuator/health` returns `{"status":"UP"}`
+- [ ] Share live URL with Tanner so CORS can be updated
+
+---
+
 ## How to Start a New Use Case
 
 ```bash
