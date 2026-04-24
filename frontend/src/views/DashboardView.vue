@@ -102,7 +102,7 @@
     { title: 'Sections', subtitle: 'Manage senior design sections', icon: 'mdi-school', color: 'primary', to: '/sections' },
     { title: 'Teams', subtitle: 'View and manage teams', icon: 'mdi-account-group', color: 'secondary', to: '/teams' },
     { title: 'Students', subtitle: 'Invite and manage students', icon: 'mdi-account-multiple', color: 'success', to: '/students' },
-    { title: 'Instructors', subtitle: 'Invite and manage instructors', icon: 'mdi-teach', color: 'info', to: '/instructors' },
+    { title: 'Instructors', subtitle: 'Invite and manage instructors', icon: 'mdi-account-tie', color: 'info', to: '/instructors' },
     { title: 'Rubrics', subtitle: 'Create evaluation rubrics', icon: 'mdi-format-list-checks', color: 'warning', to: '/rubrics' },
   ]
 

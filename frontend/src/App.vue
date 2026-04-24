@@ -9,15 +9,7 @@
           nav
           prepend-icon="mdi-pulse"
           title="Project Pulse"
-        >
-          <template #append>
-            <v-btn
-              :icon="rail ? 'mdi-chevron-right' : 'mdi-chevron-left'"
-              variant="text"
-              @click="rail = !rail"
-            />
-          </template>
-        </v-list-item>
+        />
 
         <v-divider />
 
@@ -51,7 +43,11 @@
       </v-navigation-drawer>
 
       <v-app-bar border="b" elevation="0">
-        <v-app-bar-nav-icon class="d-sm-none" @click="drawer = !drawer" />
+        <v-btn
+          :icon="rail ? 'mdi-menu' : 'mdi-menu-open'"
+          variant="text"
+          @click="rail = !rail"
+        />
         <v-app-bar-title>{{ pageTitle }}</v-app-bar-title>
       </v-app-bar>
 
@@ -82,7 +78,7 @@
   })
 
   const roleIcon = computed(() => {
-    const map: Record<string, string> = { ADMIN: 'mdi-shield-account', INSTRUCTOR: 'mdi-teach', STUDENT: 'mdi-account-school' }
+    const map: Record<string, string> = { ADMIN: 'mdi-shield-account', INSTRUCTOR: 'mdi-account-tie', STUDENT: 'mdi-account-school' }
     return map[auth.role ?? ''] ?? 'mdi-account'
   })
 
@@ -93,7 +89,7 @@
     { title: 'Sections', icon: 'mdi-school', to: '/sections' },
     { title: 'Teams', icon: 'mdi-account-group', to: '/teams' },
     { title: 'Students', icon: 'mdi-account-multiple', to: '/students' },
-    { title: 'Instructors', icon: 'mdi-teach', to: '/instructors' },
+    { title: 'Instructors', icon: 'mdi-account-tie', to: '/instructors' },
     { title: 'Rubrics', icon: 'mdi-format-list-checks', to: '/rubrics' },
     { title: 'WAR Reports', icon: 'mdi-chart-bar', to: '/reports/war' },
     { title: 'Peer Reports', icon: 'mdi-star-outline', to: '/reports/peer' },

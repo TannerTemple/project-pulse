@@ -13,9 +13,15 @@ export interface AuthUser {
 }
 
 export const useAuthStore = defineStore('auth', () => {
-  const user = ref<AuthUser | null>(
-    JSON.parse(localStorage.getItem('pp_user') ?? 'null'),
-  )
+  const stored = localStorage.getItem('pp_user')
+  let parsedUser: AuthUser | null = null
+  try {
+    parsedUser = stored ? JSON.parse(stored) : null
+  } catch {
+    localStorage.removeItem('pp_user')
+    localStorage.removeItem('pp_token')
+  }
+  const user = ref<AuthUser | null>(parsedUser)
 
   const isAuthenticated = computed(() => !!user.value)
   const role = computed(() => user.value?.role ?? null)

@@ -28,7 +28,7 @@ public class TeamController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN','INSTRUCTOR')")
+    @PreAuthorize("hasAnyRole('ADMIN','INSTRUCTOR','STUDENT')")
     public TeamResponse findById(@PathVariable Long id) {
         return teamService.findById(id);
     }
