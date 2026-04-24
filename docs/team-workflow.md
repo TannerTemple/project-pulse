@@ -31,7 +31,7 @@ Check for:
 
 - No direct push to `main`
 - No major architectural change without team discussion
-- Update `docs/development-plan.md` when tasks change
+- Update `DEVELOPMENT_PLAN.md` when tasks change
 
 ---
 

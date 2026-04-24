@@ -107,7 +107,7 @@ npm run lint         # ESLint
 - [Tech Stack](docs/tech-stack.md)
 - [API Guidelines](docs/api-guidelines.md)
 - [Coding Standards](docs/coding-standards.md)
-- [Development Plan](docs/development-plan.md)
+- [Development Plan](DEVELOPMENT_PLAN.md)
 - [Team Workflow](docs/team-workflow.md)
 - [Testing Strategy](docs/testing-strategy.md)
 - [Deployment](docs/deployment.md)
