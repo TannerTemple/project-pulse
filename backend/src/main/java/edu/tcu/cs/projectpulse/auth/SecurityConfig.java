@@ -79,9 +79,10 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowedOrigins(List.of(
-                "http://localhost:3000",   // Vite dev server (this project)
-                "http://localhost:5173",   // Vite default port
-                "http://localhost:4173"    // Vite preview
+                "http://localhost:3000",
+                "http://localhost:5173",
+                "http://localhost:4173",
+                "https://project-pulse-dtedb2g7e0b4awgm.westcentralus-01.azurewebsites.net"
         ));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));

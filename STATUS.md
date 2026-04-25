@@ -1,5 +1,6 @@
 # Project Pulse — Development Status
 
+
 > Last updated: 2026-04-22
 > Active branch: `feature/domain-model` (PR open → main)
 

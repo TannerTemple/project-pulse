@@ -19,19 +19,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      # ── Build backend JAR ───────────────────────────────────────────────────
-      - name: Set up Java 21
-        uses: actions/setup-java@v4
-        with:
-          java-version: "21"
-          distribution: temurin
-          cache: maven
-
-      - name: Package backend
-        working-directory: backend
-        run: ./mvnw package -DskipTests -q
-
-      # ── Build frontend ──────────────────────────────────────────────────────
+      # ── Build frontend first ────────────────────────────────────────────────
       - name: Set up Node 22
         uses: actions/setup-node@v4
         with:
@@ -43,12 +31,28 @@ jobs:
         working-directory: frontend
         run: npm ci && npm run build
 
+      - name: Copy frontend into backend static resources
+        run: |
+          mkdir -p backend/src/main/resources/static
+          cp -r frontend/dist/* backend/src/main/resources/static/
+
+      # ── Build backend JAR (now includes frontend) ───────────────────────────
+      - name: Set up Java 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: "21"
+          distribution: temurin
+          cache: maven
+
+      - name: Package backend
+        working-directory: backend
+        run: ./mvnw package -DskipTests -q
+
       # ── Deploy to Azure ─────────────────────────────────────────────────────
-      # TODO: configure Azure credentials and resource names before enabling.
-      # Required secrets:
-      #   AZURE_WEBAPP_PUBLISH_PROFILE  – download from Azure portal → App Service → Get publish profile
-      #   AZURE_WEBAPP_NAME             – your App Service name (e.g. project-pulse-api)
-      - name: Deploy backend to Azure App Service
+      # Required secrets (GitHub → Settings → Secrets and variables → Actions):
+      #   AZURE_WEBAPP_NAME             – App Service name from Azure portal
+      #   AZURE_WEBAPP_PUBLISH_PROFILE  – download from App Service → Get publish profile
+      - name: Deploy to Azure App Service
         uses: azure/webapps-deploy@v3
         with:
           app-name: ${{ secrets.AZURE_WEBAPP_NAME }}
