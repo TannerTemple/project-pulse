@@ -184,7 +184,7 @@
   const error = ref('')
 
   const unassignedStudents = computed(() =>
-    allStudents.value.filter(s => !s.teamId)
+    allStudents.value.filter(s => !s.teamId),
   )
 
   const unassignedInstructors = computed(() => {
@@ -204,8 +204,8 @@
       teams.value = tms
       allStudents.value = students
       allInstructors.value = instructors
-    } catch (e: any) {
-      error.value = e.message ?? 'Failed to load section.'
+    } catch (error_: any) {
+      error.value = error_.message ?? 'Failed to load section.'
     } finally {
       loading.value = false
     }

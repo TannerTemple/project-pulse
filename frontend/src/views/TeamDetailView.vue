@@ -149,8 +149,8 @@
   onMounted(async () => {
     try {
       team.value = await api.get<Team>(`/teams/${teamId}`)
-    } catch (e: any) {
-      error.value = e.message ?? 'Failed to load team.'
+    } catch (error_: any) {
+      error.value = error_.message ?? 'Failed to load team.'
     } finally {
       loading.value = false
     }
@@ -161,8 +161,8 @@
     try {
       await api.delete(`/teams/${teamId}`)
       router.push({ name: 'teams' })
-    } catch (e: any) {
-      error.value = e.message ?? 'Failed to delete team.'
+    } catch (error_: any) {
+      error.value = error_.message ?? 'Failed to delete team.'
       deleteDialog.value = false
     } finally {
       deleting.value = false
