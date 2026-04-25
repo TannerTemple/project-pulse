@@ -28,6 +28,7 @@ jobs:
         run: ./mvnw verify -q
         env:
           JWT_SECRET: dGVzdC1zZWNyZXQta2V5LWZvci1jaS1waXBlbGluZS1vbmx5LW5vdC1wcm9k
+          SPRING_PROFILES_ACTIVE: dev
 
   # ── Frontend ─────────────────────────────────────────────────────────────────
   frontend:
