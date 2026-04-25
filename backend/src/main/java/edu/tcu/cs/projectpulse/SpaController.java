@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class SpaController {
 
     // Forward all non-API, non-static routes to index.html so Vue Router handles them.
-    @GetMapping(value = "/**/{path:[^\\.]*}")
+    @GetMapping("{*path}")
     public String forward() {
         return "forward:/index.html";
     }
