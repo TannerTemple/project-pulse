@@ -69,13 +69,18 @@
               Instructors: {{ team.instructors?.map((i: any) => `${i.firstName} ${i.lastName}`).join(', ') || 'None' }}
             </div>
           </v-card-text>
-          <v-card-actions v-if="auth.role === 'ADMIN'" class="px-4 pb-3">
-            <v-btn size="small" :to="{ name: 'team-edit', params: { id: team.id } }" variant="tonal">
-              Edit
+          <v-card-actions class="px-4 pb-3">
+            <v-btn size="small" :to="{ name: 'team-detail', params: { id: team.id } }" variant="tonal">
+              View
             </v-btn>
-            <v-btn color="error" size="small" variant="text" @click="confirmDelete(team)">
-              Delete
-            </v-btn>
+            <template v-if="auth.role === 'ADMIN'">
+              <v-btn size="small" :to="{ name: 'team-edit', params: { id: team.id } }" variant="tonal">
+                Edit
+              </v-btn>
+              <v-btn color="error" size="small" variant="text" @click="confirmDelete(team)">
+                Delete
+              </v-btn>
+            </template>
           </v-card-actions>
         </v-card>
       </v-col>

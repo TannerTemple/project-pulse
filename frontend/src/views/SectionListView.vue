@@ -62,6 +62,13 @@
           <v-card-actions class="px-4 pb-3">
             <v-btn
               size="small"
+              :to="{ name: 'section-detail', params: { id: section.id } }"
+              variant="tonal"
+            >
+              View
+            </v-btn>
+            <v-btn
+              size="small"
               :to="{ name: 'section-edit', params: { id: section.id } }"
               variant="tonal"
             >

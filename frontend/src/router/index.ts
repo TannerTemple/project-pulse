@@ -44,6 +44,12 @@ const router = createRouter({
       meta: { roles: ['ADMIN'] },
     },
     {
+      path: '/sections/:id',
+      name: 'section-detail',
+      component: () => import('@/views/SectionDetailView.vue'),
+      meta: { roles: ['ADMIN'] },
+    },
+    {
       path: '/sections/:id/edit',
       name: 'section-edit',
       component: () => import('@/views/SectionFormView.vue'),
@@ -66,6 +72,12 @@ const router = createRouter({
       name: 'team-create',
       component: () => import('@/views/TeamFormView.vue'),
       meta: { roles: ['ADMIN'] },
+    },
+    {
+      path: '/teams/:id',
+      name: 'team-detail',
+      component: () => import('@/views/TeamDetailView.vue'),
+      meta: { roles: ['ADMIN', 'INSTRUCTOR'] },
     },
     {
       path: '/teams/:id/edit',
