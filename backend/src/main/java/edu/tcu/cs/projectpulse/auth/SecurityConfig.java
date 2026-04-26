@@ -43,9 +43,13 @@ public class SecurityConfig {
                         .requestMatchers("/actuator/health", "/actuator/info").permitAll()
                         // H2 console — dev profile only, never reaches prod
                         .requestMatchers("/h2-console/**").permitAll()
-                        // Everything else requires authentication;
+                        // Frontend static assets — must be publicly accessible so the SPA loads
+                        .requestMatchers("/", "/index.html", "/assets/**", "/favicon.ico", "/*.js", "/*.css", "/*.map").permitAll()
+                        // All API calls require authentication;
                         // fine-grained role checks are done with @PreAuthorize on services.
-                        .anyRequest().authenticated()
+                        .requestMatchers("/api/**").authenticated()
+                        // Non-API routes (Vue Router paths) forwarded by SpaController
+                        .anyRequest().permitAll()
                 )
                 // Allow H2 console frames in dev
                 .headers(headers -> headers.frameOptions(frame -> frame.sameOrigin()))
