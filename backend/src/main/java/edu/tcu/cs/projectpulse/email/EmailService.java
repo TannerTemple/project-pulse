@@ -32,7 +32,7 @@ public class EmailService {
     public void sendStudentInvitation(String toEmail, String adminName, String adminEmail,
                                       String token, String customMessage) {
         String registrationLink = baseUrl + "/register?token=" + token;
-        String body = customMessage != null ? customMessage
+        String body = (customMessage != null && !customMessage.isBlank()) ? customMessage
                 : buildDefaultInvitationBody(adminName, adminEmail, registrationLink);
 
         send(toEmail,
