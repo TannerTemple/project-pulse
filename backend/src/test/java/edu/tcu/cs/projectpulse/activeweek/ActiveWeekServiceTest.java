@@ -58,7 +58,6 @@ class ActiveWeekServiceTest {
     @Test
     void setupWeeks_generatesWeeksForSectionRange() {
         given(sectionService.getSectionOrThrow(1L)).willReturn(section);
-        given(activeWeekRepository.findBySectionIdOrderByWeekStartAsc(1L)).willReturn(List.of());
         given(activeWeekRepository.saveAll(anyList())).willAnswer(inv -> inv.getArgument(0));
 
         List<ActiveWeek> result = activeWeekService.setupWeeks(1L,
@@ -72,7 +71,6 @@ class ActiveWeekServiceTest {
     @Test
     void setupWeeks_marksSpecifiedWeeksInactive() {
         given(sectionService.getSectionOrThrow(1L)).willReturn(section);
-        given(activeWeekRepository.findBySectionIdOrderByWeekStartAsc(1L)).willReturn(List.of());
         given(activeWeekRepository.saveAll(anyList())).willAnswer(inv -> inv.getArgument(0));
 
         LocalDate inactive = LocalDate.of(2024, 9, 9);
@@ -88,15 +86,13 @@ class ActiveWeekServiceTest {
 
     @Test
     void setupWeeks_deletesExistingWeeksBeforeRegeneration() {
-        ActiveWeek existing = new ActiveWeek();
-        existing.setId(99L);
         given(sectionService.getSectionOrThrow(1L)).willReturn(section);
-        given(activeWeekRepository.findBySectionIdOrderByWeekStartAsc(1L)).willReturn(List.of(existing));
         given(activeWeekRepository.saveAll(anyList())).willAnswer(inv -> inv.getArgument(0));
 
         activeWeekService.setupWeeks(1L, new ActiveWeekSetupRequest(Collections.emptySet()));
 
-        then(activeWeekRepository).should().deleteAll(List.of(existing));
+        then(activeWeekRepository).should().deleteBySectionId(1L);
+        then(activeWeekRepository).should().flush();
     }
 
     @Test

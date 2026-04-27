@@ -2,7 +2,7 @@
   <v-container class="pa-6" fluid>
     <div class="d-flex align-center mb-6 ga-3">
       <h1 class="text-h5 font-weight-bold flex-grow-1">Instructors</h1>
-      <v-btn color="primary" prepend-icon="mdi-email-plus" @click="inviteDialog = true">
+      <v-btn color="primary" prepend-icon="mdi-email-plus" @click="openInviteDialog">
         Invite Instructors
       </v-btn>
     </div>
@@ -131,7 +131,7 @@
         </v-card-text>
         <v-card-actions class="px-4 pb-4">
           <v-spacer />
-          <v-btn variant="text" @click="inviteDialog = false">Cancel</v-btn>
+          <v-btn variant="text" @click="closeInviteDialog">Cancel</v-btn>
           <v-btn color="primary" :loading="inviting" @click="sendInvites">Send Invitations</v-btn>
         </v-card-actions>
       </v-card>
@@ -140,7 +140,7 @@
 </template>
 
 <script lang="ts" setup>
-  import { onMounted, ref } from 'vue'
+  import { onMounted, ref, watch } from 'vue'
   import { api, type User } from '@/api'
 
   const instructors = ref<User[]>([])
@@ -154,6 +154,21 @@
   const inviteError = ref('')
   const inviteSuccess = ref('')
   const invite = ref({ emails: '', customMessage: '' })
+
+  function clearInviteFeedback () {
+    inviteError.value = ''
+    inviteSuccess.value = ''
+  }
+
+  function openInviteDialog () {
+    clearInviteFeedback()
+    inviteDialog.value = true
+  }
+
+  function closeInviteDialog () {
+    inviteDialog.value = false
+    clearInviteFeedback()
+  }
 
   async function load () {
     loading.value = true
@@ -197,8 +212,7 @@
   }
 
   async function sendInvites () {
-    inviteError.value = ''
-    inviteSuccess.value = ''
+    clearInviteFeedback()
     if (!invite.value.emails.trim()) {
       inviteError.value = 'At least one email is required.'
       return
@@ -214,6 +228,10 @@
       inviting.value = false
     }
   }
+
+  watch(inviteDialog, isOpen => {
+    if (!isOpen) clearInviteFeedback()
+  })
 
   onMounted(load)
 </script>

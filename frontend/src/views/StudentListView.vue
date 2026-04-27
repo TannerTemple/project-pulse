@@ -6,7 +6,7 @@
         v-if="auth.role === 'ADMIN'"
         color="primary"
         prepend-icon="mdi-email-plus"
-        @click="inviteDialog = true"
+        @click="openInviteDialog"
       >
         Invite Students
       </v-btn>
@@ -139,7 +139,7 @@
         </v-card-text>
         <v-card-actions class="px-4 pb-4">
           <v-spacer />
-          <v-btn variant="text" @click="inviteDialog = false">Cancel</v-btn>
+          <v-btn variant="text" @click="closeInviteDialog">Cancel</v-btn>
           <v-btn color="primary" :loading="inviting" @click="sendInvites">Send Invitations</v-btn>
         </v-card-actions>
       </v-card>
@@ -161,7 +161,7 @@
 </template>
 
 <script lang="ts" setup>
-  import { onMounted, ref } from 'vue'
+  import { onMounted, ref, watch } from 'vue'
   import { api, type User } from '@/api'
   import { useAuthStore } from '@/stores/auth'
 
@@ -183,6 +183,21 @@
   const deleting = ref(false)
   const studentToDelete = ref<User | null>(null)
 
+  function clearInviteFeedback () {
+    inviteError.value = ''
+    inviteSuccess.value = ''
+  }
+
+  function openInviteDialog () {
+    clearInviteFeedback()
+    inviteDialog.value = true
+  }
+
+  function closeInviteDialog () {
+    inviteDialog.value = false
+    clearInviteFeedback()
+  }
+
   async function load () {
     loading.value = true
     error.value = ''
@@ -201,8 +216,7 @@
   }
 
   async function sendInvites () {
-    inviteError.value = ''
-    inviteSuccess.value = ''
+    clearInviteFeedback()
     if (!invite.value.sectionId || !invite.value.emails.trim()) {
       inviteError.value = 'Section and at least one email are required.'
       return
@@ -221,6 +235,10 @@
       inviting.value = false
     }
   }
+
+  watch(inviteDialog, isOpen => {
+    if (!isOpen) clearInviteFeedback()
+  })
 
   function confirmDelete (student: User) {
     studentToDelete.value = student
