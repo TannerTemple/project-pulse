@@ -37,9 +37,10 @@ public class ActiveWeekService {
     public List<ActiveWeek> setupWeeks(Long sectionId, ActiveWeekSetupRequest request) {
         Section section = sectionService.getSectionOrThrow(sectionId);
 
-        // Remove existing weeks first
-        activeWeekRepository.deleteAll(
-                activeWeekRepository.findBySectionIdOrderByWeekStartAsc(sectionId));
+        // Remove existing weeks first and flush so unique(section_id, week_start)
+        // won't conflict with immediately re-inserted rows in the same transaction.
+        activeWeekRepository.deleteBySectionId(sectionId);
+        activeWeekRepository.flush();
 
         Set<LocalDate> inactives = request.inactiveWeekStarts();
         List<ActiveWeek> weeks = new ArrayList<>();

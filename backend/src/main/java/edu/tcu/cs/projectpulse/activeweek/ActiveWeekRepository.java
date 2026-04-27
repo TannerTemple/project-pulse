@@ -15,4 +15,6 @@ public interface ActiveWeekRepository extends JpaRepository<ActiveWeek, Long> {
     List<ActiveWeek> findBySectionIdAndActiveTrue(Long sectionId);
 
     Optional<ActiveWeek> findBySectionIdAndWeekStart(Long sectionId, LocalDate weekStart);
+
+    void deleteBySectionId(Long sectionId);
 }
