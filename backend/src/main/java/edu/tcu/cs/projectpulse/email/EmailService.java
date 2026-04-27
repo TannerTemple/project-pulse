@@ -32,8 +32,13 @@ public class EmailService {
     public void sendStudentInvitation(String toEmail, String adminName, String adminEmail,
                                       String token, String customMessage) {
         String registrationLink = baseUrl + "/register?token=" + token;
-        String body = (customMessage != null && !customMessage.isBlank()) ? customMessage
-                : buildDefaultInvitationBody(adminName, adminEmail, registrationLink);
+        String body;
+        if (customMessage != null && !customMessage.isBlank()) {
+            // Always append the registration link so the recipient can actually register
+            body = customMessage + "\n\nTo complete your registration, use this link:\n" + registrationLink;
+        } else {
+            body = buildDefaultInvitationBody(adminName, adminEmail, registrationLink);
+        }
 
         send(toEmail,
                 "Welcome to The Peer Evaluation Tool - Complete Your Registration",

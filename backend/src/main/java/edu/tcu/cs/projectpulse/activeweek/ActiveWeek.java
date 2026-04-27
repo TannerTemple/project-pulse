@@ -1,5 +1,6 @@
 package edu.tcu.cs.projectpulse.activeweek;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import edu.tcu.cs.projectpulse.section.Section;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -34,6 +35,7 @@ public class ActiveWeek {
     @Column(nullable = false)
     private boolean active = true;
 
+    @JsonIgnore
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "section_id", nullable = false)

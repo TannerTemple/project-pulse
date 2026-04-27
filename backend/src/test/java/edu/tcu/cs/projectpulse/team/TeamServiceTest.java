@@ -181,4 +181,36 @@ class TeamServiceTest {
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("not a student");
     }
+
+    // ── removeInstructor (BR-1) ───────────────────────────────────────────────
+
+    @Test
+    void removeInstructor_givenLastInstructor_throwsIllegalStateException() {
+        AppUser instructor = new AppUser();
+        instructor.setId(20L);
+        instructor.setRole(UserRole.INSTRUCTOR);
+        team.getInstructors().add(instructor);
+
+        given(teamRepository.findById(1L)).willReturn(Optional.of(team));
+        given(userRepository.findById(20L)).willReturn(Optional.of(instructor));
+
+        assertThatThrownBy(() -> teamService.removeInstructor(1L, 20L))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessageContaining("last instructor");
+    }
+
+    @Test
+    void removeInstructor_givenMultipleInstructors_removesSuccessfully() {
+        AppUser inst1 = new AppUser(); inst1.setId(20L); inst1.setRole(UserRole.INSTRUCTOR);
+        AppUser inst2 = new AppUser(); inst2.setId(21L); inst2.setRole(UserRole.INSTRUCTOR);
+        team.getInstructors().add(inst1);
+        team.getInstructors().add(inst2);
+
+        given(teamRepository.findById(1L)).willReturn(Optional.of(team));
+        given(userRepository.findById(20L)).willReturn(Optional.of(inst1));
+
+        teamService.removeInstructor(1L, 20L);
+
+        then(teamRepository).should().save(team);
+    }
 }

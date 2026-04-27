@@ -51,7 +51,7 @@ public class ReportService {
         // All students in this section
         List<AppUser> students = userRepository.findByRole(UserRole.STUDENT).stream()
                 .filter(u -> u.getSection() != null && u.getSection().getId().equals(sectionId))
-                .sorted(Comparator.comparing(AppUser::getLastName))
+                .sorted(Comparator.comparing(AppUser::getLastName, Comparator.nullsFirst(Comparator.naturalOrder())))
                 .toList();
 
         // All submitted evals for this week (entire section)
@@ -92,7 +92,7 @@ public class ReportService {
                 .orElseThrow(() -> new ObjectNotFoundException("ActiveWeek", weekId));
 
         List<AppUser> students = team.getStudents().stream()
-                .sorted(Comparator.comparing(AppUser::getLastName))
+                .sorted(Comparator.comparing(AppUser::getLastName, Comparator.nullsFirst(Comparator.naturalOrder())))
                 .toList();
 
         Set<Long> submitterIds = new HashSet<>();
