@@ -121,6 +121,12 @@ const router = createRouter({
       component: () => import('@/views/RubricFormView.vue'),
       meta: { roles: ['ADMIN'] },
     },
+    {
+      path: '/rubrics/:id/edit',
+      name: 'rubric-edit',
+      component: () => import('@/views/RubricFormView.vue'),
+      meta: { roles: ['ADMIN'] },
+    },
 
     // ── Instructor ────────────────────────────────────────────────────────────
     {

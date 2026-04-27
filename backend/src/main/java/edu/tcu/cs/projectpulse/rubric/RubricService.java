@@ -38,14 +38,15 @@ public class RubricService {
         return RubricResponse.from(rubricRepository.save(rubric));
     }
 
-    /**
-     * Duplicates the existing rubric and applies the requested changes (UC-4 / UC-5).
-     * The original rubric is left untouched.
-     */
     @Transactional
-    public RubricResponse duplicateAndEdit(Long sourceId, RubricRequest request) {
-        getRubricOrThrow(sourceId); // validate source exists
-        return create(request);
+    public RubricResponse update(Long id, RubricRequest request) {
+        Rubric rubric = getRubricOrThrow(id);
+        if (!rubric.getName().equals(request.name()) && rubricRepository.existsByName(request.name())) {
+            throw new IllegalStateException("A rubric named \"" + request.name() + "\" already exists.");
+        }
+        rubric.setName(request.name());
+        mapCriteria(rubric, request.criteria());
+        return RubricResponse.from(rubricRepository.save(rubric));
     }
 
     // ── private ───────────────────────────────────────────────────────────────

@@ -35,4 +35,10 @@ public class RubricController {
     public ResponseEntity<RubricResponse> create(@Valid @RequestBody RubricRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(rubricService.create(request));
     }
+
+    @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public RubricResponse update(@PathVariable Long id, @Valid @RequestBody RubricRequest request) {
+        return rubricService.update(id, request);
+    }
 }
