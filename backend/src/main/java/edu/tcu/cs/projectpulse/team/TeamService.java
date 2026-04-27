@@ -135,10 +135,14 @@ public class TeamService {
     public void removeInstructor(Long teamId, Long instructorId) {
         Team team = getTeamOrThrow(teamId);
         AppUser instructor = getUserOrThrow(instructorId);
-        boolean removed = team.getInstructors().remove(instructor);
-        if (!removed) {
+        if (!team.getInstructors().contains(instructor)) {
             throw new IllegalArgumentException("Instructor is not assigned to this team.");
         }
+        // BR-1: team must retain at least one instructor
+        if (team.getInstructors().size() <= 1) {
+            throw new IllegalStateException("Cannot remove the last instructor from a team. Assign another instructor first.");
+        }
+        team.getInstructors().remove(instructor);
         teamRepository.save(team);
         emailService.sendTeamRemoval(instructor.getEmail(), instructor.getFirstName(), team.getName());
     }
