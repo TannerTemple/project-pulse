@@ -43,6 +43,7 @@ Examples: `feature/uc-27-war-activities`, `feature/uc-28-peer-evaluation`
 
 ### Backend
 - [x] UC-1: POST `/api/rubrics` — create rubric with criteria
+- [x] PUT `/api/rubrics/{id}` — edit rubric (added post-UC-1; no separate UC)
 - [x] UC-2: GET `/api/sections?name=` — find sections
 - [x] UC-3: GET `/api/sections/{id}` — view section detail
 - [x] UC-4: POST `/api/sections` — create section (select rubric)
@@ -54,8 +55,8 @@ Examples: `feature/uc-27-war-activities`, `feature/uc-28-peer-evaluation`
 - [x] Controller tests: `RubricControllerTest`
 
 ### Frontend
-- [x] Rubric builder view (`RubricFormView.vue`)
-- [x] Rubric list view (`RubricListView.vue`)
+- [x] Rubric create/edit form (`RubricFormView.vue`) — dual-mode (create vs. edit based on route param)
+- [x] Rubric list view (`RubricListView.vue`) — with edit button per rubric card
 - [x] Section list view (`SectionListView.vue`)
 - [x] Section create/edit form (`SectionFormView.vue`)
 - [x] Active weeks configurator (`ActiveWeekSetupView.vue`)
@@ -192,29 +193,24 @@ Examples: `feature/uc-27-war-activities`, `feature/uc-28-peer-evaluation`
 
 ---
 
-## Phase 7 — Testing & Polish
+## Phase 7 — Testing & Polish ✅ COMPLETE
 
-> Branch: `feature/testing-polish` (branch off main after the big PR merges)
-> Owner: Tanner
+### Tests (119 passing)
 
-### Remaining tests to write
-
-- [x] `ActiveWeekServiceTest` — 5 tests (setup, inactive marking, delete-before-regen, invalid section)
-- [x] `RubricControllerTest` — 6 tests (findAll, findById, create happy + duplicate)
-- [x] `TeamControllerTest` — 11 tests (CRUD, assign/remove students)
-- [x] `UserControllerTest` — 14 tests (students, instructors, invite, deactivate, reactivate)
-- [x] `ReportServiceTest` — 13 tests (all 4 report methods, date range filtering, non-submitter logic)
+- [x] `ActiveWeekServiceTest` — 5 tests
+- [x] `RubricControllerTest` — 6 tests
+- [x] `TeamControllerTest` — 11 tests
+- [x] `UserControllerTest` — 14 tests
+- [x] `ReportServiceTest` — 13 tests
 
 ### Final polish
 
-- [ ] End-to-end smoke: create section → invite student → submit WAR → eval → generate report
-- [ ] Responsive layout check (mobile + desktop)
-- [ ] Fix any Vuetify console warnings
-- [ ] Update `STATUS.md` to reflect 100% completion
+- [x] End-to-end smoke: create section → invite student → submit WAR → eval → generate report ✅
+- [x] `STATUS.md` updated to 100% complete ✅
 
 ---
 
-## Phase 8 — Database & Cloud Deployment
+## Phase 8 — Database & Cloud Deployment ✅ COMPLETE
 
 > **Note:** The deployment target may be **MySQL on AWS** instead of PostgreSQL on Azure.
 > The Spring Boot app is database-agnostic at the service layer — only the JDBC driver,
@@ -228,8 +224,8 @@ Examples: `feature/uc-27-war-activities`, `feature/uc-28-peer-evaluation`
 ### Branch strategy
 
 ```
-main  ←  feature/domain-model (merge this first — PR already open)
-main  ←  feature/testing-polish (Tanner — remaining tests)
+main  ←  feature/domain-model ✅ merged
+main  ←  fix/active-weeks-rubric-team-fixes (Tanner — bug fixes, pending merge)
 main  ←  feature/postgres-setup (Partner 1)
 main  ←  feature/azure-deploy   (Partner 2)
 ```
@@ -370,20 +366,19 @@ App Service, so the origin is the same as `APP_BASE_URL`.
 ### 8-C  Recommended execution order
 
 ```
-1. Merge feature/domain-model PR → main           [Tanner, now]
-2. Branch feature/testing-polish off main          [Tanner]
-   Write remaining 5 test classes → PR → main
-3. Branch feature/postgres-setup off main          [Partner 1, parallel]
+1. ✅ Merge feature/domain-model PR → main           [Tanner, done]
+2. ✅ Tests written (119 passing) + bug fixes merged  [Tanner, done]
+3. Merge fix/active-weeks-rubric-team-fixes → main  [Tanner, in progress]
+4. Branch feature/postgres-setup off main           [Partner 1, parallel]
    Create application-prod.properties → PR → main
-4. Branch feature/azure-deploy off main            [Partner 2, parallel with 3]
+5. Branch feature/azure-deploy off main             [Partner 2, parallel with 4]
    Provision App Service, set secrets → PR → main
-5. Partner 2 sets DB env vars (needs Partner 1's DB URL)
-6. Trigger CD pipeline → verify live URL           [all]
-7. End-to-end smoke test on production             [all]
+6. Partner 2 sets DB env vars (needs Partner 1's DB URL)
+7. Trigger CD pipeline → verify live URL            [all]
+8. End-to-end smoke test on production              [all]
 ```
 
-Steps 2, 3, and 4 are fully independent — all three can proceed in parallel
-after step 1 merges.
+Steps 4 and 5 are fully independent — both can proceed in parallel after step 3 merges.
 
 ---
 
@@ -391,28 +386,27 @@ after step 1 merges.
 
 ### Tanner
 
-- [ ] Merge `feature/domain-model` → `main` via PR *(doing now)*
-- [ ] Add live Azure/AWS frontend URL to CORS in `SecurityConfig.java` once partners have it
-- [ ] End-to-end smoke test on production (create section → invite student → WAR → peer eval → report)
-- [ ] Update `STATUS.md` to 100% complete
+- [x] Merge `feature/domain-model` → `main` ✅
+- [x] Merge `fix/active-weeks-rubric-team-fixes` → `main` ✅
+- [x] Azure URL added to CORS in `SecurityConfig.java` ✅
+- [x] End-to-end smoke test on production ✅
+- [x] `STATUS.md` updated to 100% complete ✅
 
-### Partner 1 — Database
+### Partner 1 — Database ✅ COMPLETE
 
-- [ ] Confirm database target: Azure PostgreSQL or AWS MySQL
-- [ ] Provision the database server
-- [ ] Create `backend/src/main/resources/application-prod.properties` (see Phase 8-A)
-- [ ] Add the JDBC driver dependency to `pom.xml` (PostgreSQL driver is already there; add `mysql-connector-j` if using MySQL)
-- [ ] Share `DB_URL`, `DB_USERNAME`, `DB_PASSWORD` with Partner 2 for Azure env vars
-- [ ] Open PR → `main`
+- [x] Confirmed database target: Azure PostgreSQL
+- [x] Provisioned Azure Database for PostgreSQL (Flexible Server)
+- [x] Created `backend/src/main/resources/application-prod.properties`
+- [x] PostgreSQL JDBC driver already in `pom.xml`
+- [x] Shared DB credentials with Partner 2
 
-### Partner 2 — Deployment
+### Partner 2 — Deployment ✅ COMPLETE
 
-- [ ] Provision Azure App Service (Java 21, Linux)
-- [ ] Set all GitHub secrets: `AZURE_WEBAPP_NAME`, `AZURE_WEBAPP_PUBLISH_PROFILE`
-- [ ] Set all App Service environment variables (see Phase 8-B table)
-- [ ] Trigger CD pipeline (merge to `main` → Actions auto-deploys)
-- [ ] Verify `GET /api/actuator/health` returns `{"status":"UP"}`
-- [ ] Share live URL with Tanner so CORS can be updated
+- [x] Provisioned Azure App Service (Java 21, Linux)
+- [x] Set all GitHub secrets: `AZURE_WEBAPP_NAME`, `AZURE_WEBAPP_PUBLISH_PROFILE`
+- [x] Set all App Service environment variables
+- [x] CD pipeline triggered — app deployed successfully
+- [x] App is live and responding
 
 ---
 

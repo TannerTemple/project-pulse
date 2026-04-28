@@ -54,3 +54,6 @@ Thumbs.db
 # ── Logs ──────────────────────────────────────────────────────────────────────
 *.log
 logs/
+
+# ── Local / professor reference files ─────────────────────────────────────────
+project-pulse-professor-md-files/
