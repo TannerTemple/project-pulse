@@ -160,10 +160,14 @@
     saving.value = true
     error.value = ''
     try {
+      const rawUrl = form.value.websiteUrl?.trim()
+      const websiteUrl = rawUrl && !rawUrl.startsWith('http://') && !rawUrl.startsWith('https://')
+        ? 'https://' + rawUrl
+        : rawUrl || null
       const payload = {
         name: form.value.name,
         description: form.value.description,
-        websiteUrl: form.value.websiteUrl,
+        websiteUrl,
         sectionId: form.value.sectionId,
       }
       let teamId: number

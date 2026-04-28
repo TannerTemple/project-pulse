@@ -14,7 +14,15 @@
     <v-row v-else-if="rubrics.length > 0">
       <v-col v-for="rubric in rubrics" :key="rubric.id" cols="12" md="6">
         <v-card rounded="lg">
-          <v-card-title class="pa-4 pb-2">{{ rubric.name }}</v-card-title>
+          <v-card-title class="pa-4 pb-2 d-flex align-center">
+            <span class="flex-grow-1">{{ rubric.name }}</span>
+            <v-btn
+              icon="mdi-pencil"
+              size="small"
+              :to="{ name: 'rubric-edit', params: { id: rubric.id } }"
+              variant="text"
+            />
+          </v-card-title>
           <v-card-text class="px-4 pt-0">
             <v-chip-group>
               <v-chip

@@ -129,6 +129,7 @@
   const deleteDialog = ref(false)
   const teamToDelete = ref<Team | null>(null)
   const deleting = ref(false)
+  const myUserId = ref<number | null>(null)
 
   async function load () {
     loading.value = true
@@ -138,7 +139,10 @@
       if (searchName.value) params.set('name', searchName.value)
       if (sectionId.value) params.set('sectionId', String(sectionId.value))
       const q = params.toString() ? `?${params}` : ''
-      teams.value = await api.get<Team[]>(`/teams${q}`)
+      const all = await api.get<Team[]>(`/teams${q}`)
+      teams.value = auth.role === 'INSTRUCTOR' && myUserId.value
+        ? all.filter(t => t.instructors.some((i: any) => i.id === myUserId.value))
+        : all
     } catch (error_: any) {
       error.value = error_.message
     } finally {
@@ -166,6 +170,10 @@
   }
 
   onMounted(async () => {
+    if (auth.role === 'INSTRUCTOR') {
+      const me = await api.get<any>('/users/me').catch(() => null)
+      if (me) myUserId.value = me.id
+    }
     if (auth.role === 'ADMIN') {
       sections.value = await api.get<Section[]>('/sections').catch(() => [])
     }
