@@ -18,6 +18,8 @@ import edu.tcu.cs.projectpulse.war.WARActivity;
 import edu.tcu.cs.projectpulse.war.WARActivityRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -47,6 +49,7 @@ public class ReportService {
                 .orElseThrow(() -> new ObjectNotFoundException("Section", sectionId));
         ActiveWeek week = weekRepository.findById(weekId)
                 .orElseThrow(() -> new ObjectNotFoundException("ActiveWeek", weekId));
+        boolean includePrivateComments = includePrivateCommentsForCurrentUser();
 
         // All students in this section
         List<AppUser> students = userRepository.findByRole(UserRole.STUDENT).stream()
@@ -71,7 +74,7 @@ public class ReportService {
 
         // Build per-student summary (as evaluatee)
         List<StudentPeerSummary> summaries = students.stream()
-                .map(student -> buildStudentSummary(student, allEvals))
+                .map(student -> buildStudentSummary(student, allEvals, includePrivateComments))
                 .toList();
 
         return new SectionPeerReportResponse(
@@ -134,6 +137,7 @@ public class ReportService {
     public StudentPeerRangeResponse studentPeerReport(Long studentId, LocalDate start, LocalDate end) {
         AppUser student = userRepository.findById(studentId)
                 .orElseThrow(() -> new ObjectNotFoundException("User", studentId));
+        boolean includePrivateComments = includePrivateCommentsForCurrentUser();
 
         List<PeerEvaluation> evals = evalRepository.findByEvaluateeId(studentId).stream()
                 .filter(PeerEvaluation::isSubmitted)
@@ -154,7 +158,7 @@ public class ReportService {
                     List<PeerEvaluation> weekEvals = entry.getValue();
                     BigDecimal grade = computeGrade(weekEvals);
                     List<StudentPeerSummary.EvaluatorDetail> details = weekEvals.stream()
-                            .map(this::toEvaluatorDetail)
+                            .map(e -> toEvaluatorDetail(e, includePrivateComments))
                             .toList();
                     return new StudentPeerRangeResponse.WeekEntry(
                             week.getId(), week.getWeekStart().toString(), grade, details);
@@ -210,7 +214,8 @@ public class ReportService {
 
     // ── private helpers ───────────────────────────────────────────────────────
 
-    private StudentPeerSummary buildStudentSummary(AppUser student, List<PeerEvaluation> allEvals) {
+    private StudentPeerSummary buildStudentSummary(AppUser student, List<PeerEvaluation> allEvals,
+                                                   boolean includePrivateComments) {
         List<PeerEvaluation> received = allEvals.stream()
                 .filter(e -> e.getEvaluatee().getId().equals(student.getId()))
                 .toList();
@@ -219,7 +224,7 @@ public class ReportService {
         boolean submitted = !received.isEmpty();
 
         List<StudentPeerSummary.EvaluatorDetail> details = received.stream()
-                .map(this::toEvaluatorDetail)
+                .map(e -> toEvaluatorDetail(e, includePrivateComments))
                 .toList();
 
         return new StudentPeerSummary(
@@ -229,7 +234,7 @@ public class ReportService {
         );
     }
 
-    private StudentPeerSummary.EvaluatorDetail toEvaluatorDetail(PeerEvaluation e) {
+    private StudentPeerSummary.EvaluatorDetail toEvaluatorDetail(PeerEvaluation e, boolean includePrivateComments) {
         List<StudentPeerSummary.ScoreDetail> scores = e.getScores().stream()
                 .map(s -> new StudentPeerSummary.ScoreDetail(s.getCriterion().getName(), s.getScore()))
                 .toList();
@@ -238,8 +243,17 @@ public class ReportService {
                 e.getEvaluator().getFirstName() + " " + e.getEvaluator().getLastName(),
                 scores,
                 e.getPublicComments(),
-                e.getPrivateComments()
+                includePrivateComments ? e.getPrivateComments() : null
         );
+    }
+
+    private boolean includePrivateCommentsForCurrentUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null) {
+            return false;
+        }
+        return authentication.getAuthorities().stream()
+                .anyMatch(a -> "ROLE_INSTRUCTOR".equals(a.getAuthority()));
     }
 
     /** Grade = average of per-evaluator totals (UC-29/31/33 algorithm). */

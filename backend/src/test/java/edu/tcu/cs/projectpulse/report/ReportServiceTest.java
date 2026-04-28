@@ -20,12 +20,16 @@ import edu.tcu.cs.projectpulse.user.UserRepository;
 import edu.tcu.cs.projectpulse.user.UserRole;
 import edu.tcu.cs.projectpulse.war.WARActivity;
 import edu.tcu.cs.projectpulse.war.WARActivityRepository;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -55,6 +59,8 @@ class ReportServiceTest {
 
     @BeforeEach
     void setUp() {
+        setAuthenticatedRole("INSTRUCTOR");
+
         section = new Section();
         section.setId(1L);
         section.setName("2024-2025");
@@ -88,6 +94,11 @@ class ReportServiceTest {
         team.setInstructors(new ArrayList<>());
     }
 
+    @AfterEach
+    void clearSecurityContext() {
+        SecurityContextHolder.clearContext();
+    }
+
     // ── sectionPeerReport (UC-31) ─────────────────────────────────────────────
 
     @Test
@@ -119,6 +130,46 @@ class ReportServiceTest {
 
         // bob submitted (is evaluator), alice did not
         assertThat(result.nonSubmitters()).containsExactly("Alice Smith");
+    }
+
+    @Test
+    void sectionPeerReport_givenInstructor_includesPrivateComments() {
+        setAuthenticatedRole("INSTRUCTOR");
+        PeerEvaluation eval = submittedEval(bob, alice, week, 8);
+
+        given(sectionRepository.findById(1L)).willReturn(Optional.of(section));
+        given(weekRepository.findById(10L)).willReturn(Optional.of(week));
+        given(userRepository.findByRole(UserRole.STUDENT)).willReturn(List.of(alice, bob));
+        given(evalRepository.findByWeekId(10L)).willReturn(List.of(eval));
+
+        SectionPeerReportResponse result = reportService.sectionPeerReport(1L, 10L);
+        var aliceSummary = result.students().stream()
+                .filter(s -> s.studentId().equals(alice.getId()))
+                .findFirst()
+                .orElseThrow();
+
+        assertThat(aliceSummary.evaluations().get(0).privateComments())
+                .isEqualTo("Private note");
+    }
+
+    @Test
+    void sectionPeerReport_givenAdmin_redactsPrivateComments() {
+        setAuthenticatedRole("ADMIN");
+        PeerEvaluation eval = submittedEval(bob, alice, week, 8);
+
+        given(sectionRepository.findById(1L)).willReturn(Optional.of(section));
+        given(weekRepository.findById(10L)).willReturn(Optional.of(week));
+        given(userRepository.findByRole(UserRole.STUDENT)).willReturn(List.of(alice, bob));
+        given(evalRepository.findByWeekId(10L)).willReturn(List.of(eval));
+
+        SectionPeerReportResponse result = reportService.sectionPeerReport(1L, 10L);
+        var aliceSummary = result.students().stream()
+                .filter(s -> s.studentId().equals(alice.getId()))
+                .findFirst()
+                .orElseThrow();
+
+        assertThat(aliceSummary.evaluations().get(0).privateComments())
+                .isNull();
     }
 
     @Test
@@ -293,5 +344,14 @@ class ReportServiceTest {
         a.setPlannedHours(4.0);
         a.setActualHours(3.5);
         return a;
+    }
+
+    private void setAuthenticatedRole(String role) {
+        var auth = new UsernamePasswordAuthenticationToken(
+                "test@tcu.edu",
+                null,
+                List.of(new SimpleGrantedAuthority("ROLE_" + role))
+        );
+        SecurityContextHolder.getContext().setAuthentication(auth);
     }
 }

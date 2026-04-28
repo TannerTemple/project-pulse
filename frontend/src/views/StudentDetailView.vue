@@ -133,7 +133,7 @@
                           {{ score.criterionName }}
                         </th>
                         <th>Public</th>
-                        <th>Private</th>
+                        <th v-if="showPrivateComments">Private</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -143,7 +143,7 @@
                           {{ score.score }}
                         </td>
                         <td>{{ ev.publicComments ?? '—' }}</td>
-                        <td>{{ ev.privateComments ?? '—' }}</td>
+                        <td v-if="showPrivateComments">{{ ev.privateComments ?? '—' }}</td>
                       </tr>
                     </tbody>
                   </v-table>
@@ -206,12 +206,15 @@
 </template>
 
 <script lang="ts" setup>
-  import { onMounted, ref } from 'vue'
+  import { computed, onMounted, ref } from 'vue'
   import { useRoute } from 'vue-router'
   import { api, type StudentPeerRangeReport, type StudentWARRangeReport, type User } from '@/api'
+  import { useAuthStore } from '@/stores/auth'
 
   const route = useRoute()
   const studentId = Number(route.params.id)
+  const auth = useAuthStore()
+  const showPrivateComments = computed(() => auth.role === 'INSTRUCTOR')
 
   const student = ref<User | null>(null)
   const peerReport = ref<StudentPeerRangeReport | null>(null)
