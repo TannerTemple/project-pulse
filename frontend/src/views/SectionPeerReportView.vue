@@ -114,7 +114,7 @@
                     {{ score.criterionName }}
                   </th>
                   <th>Public Comment</th>
-                  <th>Private Comment</th>
+                  <th v-if="showPrivateComments">Private Comment</th>
                 </tr>
               </thead>
               <tbody>
@@ -127,7 +127,7 @@
                     {{ score.score }}
                   </td>
                   <td>{{ ev.publicComments ?? '—' }}</td>
-                  <td>{{ ev.privateComments ?? '—' }}</td>
+                  <td v-if="showPrivateComments">{{ ev.privateComments ?? '—' }}</td>
                 </tr>
               </tbody>
             </v-table>
@@ -147,8 +147,9 @@
 </template>
 
 <script lang="ts" setup>
-  import { onMounted, ref } from 'vue'
+  import { computed, onMounted, ref } from 'vue'
   import { api, type Section, type SectionPeerReport } from '@/api'
+  import { useAuthStore } from '@/stores/auth'
 
   interface WeekOption {
     id: number
@@ -166,6 +167,8 @@
   const loadingWeeks = ref(false)
   const loadingReport = ref(false)
   const error = ref('')
+  const auth = useAuthStore()
+  const showPrivateComments = computed(() => auth.role === 'INSTRUCTOR')
 
   onMounted(async () => {
     loadingSections.value = true
