@@ -131,12 +131,14 @@
 <script lang="ts" setup>
   import { onMounted, ref } from 'vue'
   import { api, type Team, type TeamWARReport } from '@/api'
+  import { useAuthStore } from '@/stores/auth'
 
   interface WeekOption {
     id: number
     label: string
   }
 
+  const auth = useAuthStore()
   const teams = ref<Team[]>([])
   const weeks = ref<WeekOption[]>([])
   const report = ref<TeamWARReport | null>(null)
@@ -152,7 +154,15 @@
   onMounted(async () => {
     loadingTeams.value = true
     try {
-      teams.value = await api.get<Team[]>('/teams')
+      let myUserId: number | null = null
+      if (auth.role === 'INSTRUCTOR') {
+        const me = await api.get<any>('/users/me').catch(() => null)
+        if (me) myUserId = me.id
+      }
+      const all = await api.get<Team[]>('/teams')
+      teams.value = myUserId
+        ? all.filter(t => t.instructors?.some((i: any) => i.id === myUserId))
+        : all
     } catch (error_: any) {
       error.value = error_.message
     } finally {

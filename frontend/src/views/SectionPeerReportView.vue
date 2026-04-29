@@ -173,7 +173,19 @@
   onMounted(async () => {
     loadingSections.value = true
     try {
-      sections.value = await api.get<Section[]>('/sections')
+      if (auth.role === 'INSTRUCTOR') {
+        const me = await api.get<any>('/users/me').catch(() => null)
+        const myId = me?.id ?? null
+        const allTeams = await api.get<any[]>('/teams')
+        const myTeams = myId
+          ? allTeams.filter(t => t.instructors?.some((i: any) => i.id === myId))
+          : []
+        const sectionIds = new Set(myTeams.map((t: any) => t.sectionId))
+        const allSections = await api.get<Section[]>('/sections')
+        sections.value = allSections.filter(s => sectionIds.has(s.id))
+      } else {
+        sections.value = await api.get<Section[]>('/sections')
+      }
     } catch (error_: any) {
       error.value = error_.message
     } finally {
