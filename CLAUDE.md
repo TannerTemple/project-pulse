@@ -191,6 +191,14 @@ test(UC-27): unit + integration tests for WAR activity service
 
 Always branch off `main`. Open a PR into `main` when the UC is complete and tested.
 
+**MANDATORY — Start of every session:**
+```bash
+git checkout main && git pull
+```
+Do this before creating any branch or writing any code. Local `main` can silently
+fall behind `origin/main` between sessions, causing branches to be built on stale
+history. Never skip this step.
+
 ---
 
 ## 9. What Already Exists — Do Not Recreate
