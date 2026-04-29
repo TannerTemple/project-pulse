@@ -6,7 +6,111 @@
 
 ---
 
-## Example 1 — Diagnosing a Non-Obvious 500 Error on "Generate Weeks"
+## Example 1 — Building the Entire Backend from Requirements Documents
+
+### Context
+The project started with only a scaffolded Spring Boot + Vue 3 shell and a set of
+requirements documents (`requirements/use-cases.md`, `requirements/glossary.md`,
+`requirements/vision-and-scope.md`). The goal was to have Claude read those documents
+and implement every admin use case (UC-1 through UC-24) in a single focused session,
+following a strict architecture.
+
+### User Prompt (paraphrased from session)
+> "Read the requirements documents in the requirements/ folder. Build the full backend
+> for the admin use cases — rubrics, sections, active weeks, teams, and user management.
+> Follow the feature-package structure (no flat service/controller/repository layers).
+> Every feature needs an Entity, Repository, Service, Controller, and DTOs. Use
+> @PreAuthorize for role guards. Throw typed exceptions that map to 400/404/409."
+
+### What Claude Did
+Claude read all three requirements documents, cross-referenced UC numbers with
+business rules, and produced the following in one session:
+
+**Architecture enforced across every feature:**
+- Feature-package layout: `rubric/`, `section/`, `activeweek/`, `team/`, `user/`
+- Every feature: `Entity → Repository → Service → Controller → DTOs (Request + Response records)`
+- `@PreAuthorize("hasRole('ADMIN')")` on all admin service methods
+- `ObjectNotFoundException` → 404, `IllegalArgumentException` → 400, `IllegalStateException` → 409
+- `GlobalExceptionHandler` mapping all typed exceptions to structured `ApiError` responses
+
+**Endpoints produced (34 files, 2,217 lines added in one commit):**
+- `POST /api/rubrics` — create rubric with criteria (UC-1)
+- `GET/POST /api/sections`, `PUT /api/sections/{id}` — section management (UC-2–5)
+- `POST /api/sections/{id}/weeks` — active week setup (UC-6)
+- `GET/POST/PUT/DELETE /api/teams/{id}` + assign/remove students and instructors (UC-7–14)
+- `GET/DELETE /api/students/{id}`, invite via email token (UC-15–17)
+- `GET /api/instructors`, deactivate/reactivate, invite (UC-18–24)
+- Async email service (Gmail SMTP) for invitation, assignment, and removal notifications
+- CI/CD workflows (GitHub Actions → Azure App Service)
+
+### What This Demonstrates
+- Using AI to translate requirement documents directly into working, structured code
+- AI enforcing architectural rules (feature packages, no flat layers) consistently
+  across 5 separate domain features without drift
+- A single well-structured prompt producing 34 files and a fully functional backend
+  rather than generating code piecemeal with no coherence
+
+---
+
+## Example 2 — Creating AI Guidance Documents That Govern Every Future Session
+
+### Context
+After the backend was built, the project needed a way to ensure that every future AI
+session (and every team member using AI) would follow the same architecture, naming
+conventions, testing strategy, and workflow — without having to re-explain everything
+from scratch each time.
+
+### User Prompt (paraphrased from session)
+> "Create a set of markdown files that Claude will read at the start of every session.
+> One should be a master guide covering architecture rules, what already exists, how
+> to implement a use case step by step, commit format, branch strategy, and business
+> rules to enforce in code. Also create a development plan checklist, a testing
+> strategy, and a naming conventions reference."
+
+### What Claude Produced
+Four documents totalling 879 lines, committed on April 15 2026:
+
+**`CLAUDE.md` — Master AI development guide (read before every response)**
+- Required tech stack table (Spring Boot 4.x, Java 21, Vue 3, Vuetify 4 — no exceptions)
+- Repository structure diagram
+- Backend architecture rules: feature-package layout, Entity→Repository→Service→Controller→DTO chain, security rules, error handling, database profiles
+- Frontend architecture rules: Vuetify-only UI, all API calls through `src/api/index.ts`, auth state only in Pinia store
+- Step-by-step "How to Implement a Use Case" checklist (6 steps in order)
+- Commit message format with examples
+- Branch strategy table
+- "What Already Exists — Do Not Recreate" table (prevents AI from re-implementing done work)
+- Key business rules table mapping each BR to the exact service method that enforces it
+
+**`DEVELOPMENT_PLAN.md` — Phase-by-phase UC checklist**
+- Phases 0–8 with every use case broken into backend and frontend checkboxes
+- Work split recommendations for 3 teammates
+- How-to-start-a-new-UC instructions with exact git commands
+
+**`TEST_STRATEGY.md` — Testing rules**
+- When to write unit tests vs. `@WebMvcTest` controller slice tests vs. `@SpringBootTest`
+- Coverage targets per feature
+- Note that Spring Boot 4.x uses `@MockitoBean` not `@MockBean`
+
+**`NAMING_CONVENTIONS.md` — Naming rules**
+- Package, class, method, variable, REST endpoint, Vue file, branch, and commit naming
+- Both backend (Java) and frontend (TypeScript/Vue) covered
+
+### Why This Matters
+These documents meant that every subsequent AI session — even after the context
+window reset — produced code consistent with the original architecture. Claude read
+`CLAUDE.md` before touching anything, which is why 125 tests across 17 test classes
+all follow the same patterns, all 20 Vue views use Vuetify consistently, and no
+feature ever broke the layer separation rules.
+
+### What This Demonstrates
+- Using AI not just to write code, but to create the governance structure that makes
+  all future AI-assisted code trustworthy and consistent
+- A single prompt producing self-referential documentation that amplifies the value
+  of every subsequent AI interaction in the project
+
+---
+
+## Example 3 — Diagnosing a Non-Obvious 500 Error on "Generate Weeks"
 
 ### Context
 The admin's "Generate Weeks" button on the Active Week Setup page was throwing a 500
@@ -64,7 +168,7 @@ private Section section;
 
 ---
 
-## Example 2 — Challenging AI Output: Verifying a Business Rule
+## Example 4 — Challenging AI Output: Verifying a Business Rule
 
 ### Context
 During implementation of `TeamService.removeInstructor()`, Claude enforced BR-1:
@@ -106,7 +210,7 @@ if (team.getInstructors().size() <= 1) {
 
 ---
 
-## Example 3 — Full Backend Fix Cycle: Rubric Edit 500 with Unit Tests
+## Example 5 — Full Backend Fix Cycle: Rubric Edit 500 with Unit Tests
 
 ### Context
 The admin could create rubrics but had no way to edit them after creation. When a
@@ -210,7 +314,7 @@ Test suite: **125 tests, 0 failures.**
 
 ---
 
-## Example 4 — Role-Based Data Scoping: Instructor Sees Only Their Data
+## Example 6 — Role-Based Data Scoping: Instructor Sees Only Their Data
 
 ### Context
 Instructors could see all teams in the WAR report dropdown and all sections in the
