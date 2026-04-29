@@ -392,3 +392,159 @@ responses contained all the data required to derive the correct scoped list.
 - Solving a scoping problem without adding new backend endpoints by reusing existing API data
 - Understanding that `/users/me` + client-side filtering is a valid approach when the
   backend already returns the necessary fields (`instructors` array on each team)
+
+---
+
+> \* Examples 7–10 below are reconstructed from git commit history and code output.
+> The exact prompts were given in earlier sessions outside the current context window.
+
+---
+
+## Example 7 * — Designing the Full JPA Domain Model
+
+### Context
+Before any REST endpoints could be written, the full data model needed to be designed
+and implemented as JPA entities. This required translating the requirements documents
+into entity relationships, deciding on cascade rules, and setting up enums.
+
+### User Prompt (reconstructed)
+> "Read the requirements and create the full JPA domain model for the project.
+> Every entity needs proper relationships, cascade settings, and Lombok annotations.
+> No @Data on entities — use @Getter @Setter @NoArgsConstructor to avoid breaking
+> Hibernate lazy-loading."
+
+### What Claude Produced
+Nine entities with full relationship mapping in one commit:
+
+| Entity | Key Relationships |
+|---|---|
+| `Section` | One-to-many `ActiveWeek`, many-to-one `Rubric` |
+| `Team` | Many-to-one `Section`, many-to-many `AppUser` (students + instructors) |
+| `AppUser` | Enum role (`ADMIN`, `INSTRUCTOR`, `STUDENT`), many-to-many `Team` |
+| `ActiveWeek` | Many-to-one `Section`, lazy-loaded |
+| `Rubric` | One-to-many `Criterion` (cascade ALL, orphanRemoval) |
+| `Criterion` | Many-to-one `Rubric`, ordered by `orderIndex` |
+| `WARActivity` | Many-to-one `AppUser` + `ActiveWeek`, enum category + status |
+| `PeerEvaluation` | Many-to-one evaluator/evaluatee (`AppUser`) + `ActiveWeek` |
+| `EvaluationScore` | Many-to-one `PeerEvaluation` + `Criterion`, unique constraint |
+
+Cascade and fetch strategies were set intentionally:
+- `Rubric.criteria`: `CascadeType.ALL + orphanRemoval = true` (criteria owned by rubric)
+- `ActiveWeek.section`: `FetchType.LAZY` (later required `@JsonIgnore` when `open-in-view=false`)
+- `PeerEvaluation` → `EvaluationScore`: unique constraint on `(peer_evaluation_id, criterion_id)`
+
+### What This Demonstrates
+- Translating business requirements into a normalized relational data model
+- Making deliberate decisions about cascade types and fetch strategies
+- Anticipating constraints (unique evals per criterion per evaluation) from the requirements
+
+---
+
+## Example 8 * — Implementing JWT Auth with Spring Security
+
+### Context
+The project required stateless JWT authentication with role-based access, token-based
+email invitation registration, and CORS configured for both local dev and Azure.
+
+### User Prompt (reconstructed)
+> "Implement the full auth layer — JWT login, stateless Spring Security config,
+> and token-based registration flow so invited users can set up their account via
+> an email link. Use JJWT 0.12.x. No session state."
+
+### What Claude Produced
+A complete auth layer in one commit:
+
+- **`JwtService`** — token generation, validation, and claims extraction using JJWT 0.12.x
+- **`JwtAuthFilter`** — `OncePerRequestFilter` extracting Bearer token, loading user, setting `SecurityContextHolder`
+- **`SecurityConfig`** — stateless sessions, CORS (localhost:3000 + Azure URL), public routes (`/api/auth/**`, `/api/invitations/**`), method security enabled via `@EnableMethodSecurity`
+- **`AuthController`** — `POST /api/auth/login` and `POST /api/auth/register` (token-validated invitation flow)
+- **`DataSeeder`** — seeds a default admin account on startup in the dev profile so the app is immediately usable
+
+The invitation flow:
+1. Admin invites user → backend generates a signed JWT invitation token → emailed as a link
+2. User clicks link → `RegisterView.vue` reads token from URL → `POST /api/auth/register` with token + new password
+3. Backend validates token, activates account, returns auth JWT
+
+### What This Demonstrates
+- Implementing a non-trivial stateless auth system end-to-end
+- Using JWT for two separate purposes (auth sessions + invitation tokens) with different expiry
+- Configuring Spring Security 6.x correctly for a stateless REST API
+
+---
+
+## Example 9 * — Implementing All Student and Instructor Features (UC-27–34)
+
+### Context
+After the admin backend was complete, all student-facing and instructor-facing use
+cases needed to be implemented: WAR activity management, peer evaluation with 5
+business rules, 4 report endpoints, and all 20 frontend Vue views.
+
+### User Prompt (reconstructed)
+> "Implement UC-27 through UC-34 — WAR activities, peer evaluation submission and
+> report, instructor reports, and account management. Enforce all business rules.
+> Then build all the frontend views for every role: admin, student, and instructor."
+
+### What Claude Produced
+
+**Backend (UC-27–34):**
+- `WARActivityService/Controller` — CRUD for weekly activities, blocks future weeks
+- `PeerEvaluationService/Controller` — submit evaluations with 5 enforced business rules:
+  - BR-2: Week must be currently active
+  - BR-3: Cannot edit after submission (immutable once submitted)
+  - BR-4: Must be for the previous week, submitted within 1 week of it ending
+  - BR-5: Evaluator identity and private comments never returned to students
+  - Evaluator and evaluatee must be teammates (not strangers)
+- `ReportService/Controller` — 4 report endpoints for section peer evals, team WAR, student peer history, student WAR history
+- `PATCH /api/users/me` — students and instructors edit their own account
+
+**Frontend (all 20 views):**
+- Auth: `LoginView`, `RegisterView`
+- Admin: `DashboardView`, `SectionListView`, `SectionFormView`, `ActiveWeekSetupView`, `TeamListView`, `TeamFormView`, `StudentListView`, `StudentDetailView`, `InstructorListView`, `InstructorDetailView`, `RubricListView`, `RubricFormView`
+- Student: `AccountSettingsView`, `WARActivityView`, `PeerEvaluationView`, `MyReportView`
+- Instructor: `SectionPeerReportView`, `TeamWARReportView`
+
+### What This Demonstrates
+- Implementing complex business rules in service-layer code with clear enforcement points
+- Building an entire frontend (20 views, role-aware routing, Pinia auth store) from scratch
+- Keeping frontend and backend in sync across a large feature set in one coordinated session
+
+---
+
+## Example 10 * — Writing 125 Unit and Integration Tests Systematically
+
+### Context
+After features were complete, the project needed comprehensive test coverage across
+all 17 feature test classes. This required both unit tests (Mockito) and controller
+slice tests (`@WebMvcTest`) following the project's `TEST_STRATEGY.md`.
+
+### User Prompt (reconstructed)
+> "Write unit tests and controller tests for every feature package. Follow
+> TEST_STRATEGY.md. Use @MockitoBean not @MockBean (Spring Boot 4.x). Cover
+> the happy path, not-found cases, validation errors, and business rule violations."
+
+### What Claude Produced
+125 tests across 17 test classes, all passing:
+
+| Test Class | Count | What It Covers |
+|---|---|---|
+| `RubricServiceTest` | 7 | create, find, duplicate name, update guarded by section assignment |
+| `RubricControllerTest` | 6 | all endpoints, 403 for non-admin |
+| `SectionServiceTest` | 7 | CRUD, duplicate name, not-found |
+| `SectionControllerTest` | 6 | all endpoints |
+| `TeamServiceTest` | 12 | CRUD, assign/remove students and instructors, BR-1 enforcement |
+| `TeamControllerTest` | 11 | all endpoints |
+| `UserServiceTest` | 13 | invite, find, deactivate, reactivate, delete |
+| `UserControllerTest` | 14 | all endpoints, role guards |
+| `ActiveWeekServiceTest` | 5 | setup, inactive marking, regen, invalid section |
+| `WARActivityServiceTest` | 6 | CRUD, future-week block |
+| `WARActivityControllerTest` | 6 | all endpoints |
+| `PeerEvaluationServiceTest` | 6 | submit, BR-2/3/4/5 enforcement |
+| `PeerEvaluationControllerTest` | 4 | submit, report |
+| `ReportServiceTest` | 15 | all 4 report methods, date range filtering, non-submitter logic |
+| `ReportControllerTest` | 6 | all report endpoints |
+| `ProjectpulseApplicationTests` | 1 | context loads smoke test |
+
+### What This Demonstrates
+- Writing tests that verify behavior, not just coverage (business rule violation paths tested explicitly)
+- Adapting to framework-specific quirks (`@MockitoBean` in Spring Boot 4.x vs. `@MockBean` in 3.x)
+- Systematic, consistent test structure across an entire codebase rather than scattered spot-checks
