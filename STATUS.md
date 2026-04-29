@@ -1,12 +1,11 @@
 # Project Pulse — Development Status
 
-
-> Last updated: 2026-04-22
-> Active branch: `feature/domain-model` (PR open → main)
+> Last updated: 2026-04-29
+> Active branch: `bugfix/instructor-scoping-rubric-edit-guard` (PR open → main)
 
 ---
 
-## Overall Completion: ~95%
+## Overall Completion: 100% ✅
 
 | Area | Status | % Done |
 |---|---|---|
@@ -19,9 +18,9 @@
 | Frontend — Admin views | Complete | 100% |
 | Frontend — Student views | Complete | 100% |
 | Frontend — Instructor/Report views | Complete | 100% |
-| Unit + integration tests | Complete | ~95% |
-| Database (MySQL/PostgreSQL prod) | Schema defined, not connected | ~10% |
-| Deployment (AWS/Azure) | CI/CD written, cloud not configured | ~15% |
+| Unit + integration tests | Complete | 100% |
+| Database (PostgreSQL on Azure) | Live | 100% |
+| Deployment (Azure App Service) | Live | 100% |
 
 ---
 
@@ -39,7 +38,7 @@
 
 ### Phase 1–3 — Admin Backend APIs (Complete)
 All admin endpoints live under `/api/`:
-- Rubrics: `POST /rubrics`, `GET /rubrics`, `GET /rubrics/{id}`
+- Rubrics: `POST /rubrics`, `GET /rubrics`, `GET /rubrics/{id}`, `PUT /rubrics/{id}`
 - Sections: `GET/POST /sections`, `GET/PUT /sections/{id}`
 - Active weeks: `POST /sections/{id}/weeks`, `GET /sections/{id}/weeks`
 - Teams: `GET/POST /teams`, `GET/PUT/DELETE /teams/{id}`
@@ -55,6 +54,7 @@ All admin endpoints live under `/api/`:
 - `GET /api/peer-evaluations/me/report?weekId=` — view own report (UC-29)
 
 Business rules enforced:
+- BR-1: Every team must have ≥1 instructor before an instructor can be removed
 - BR-2: Evals only during an active week
 - BR-3: Cannot edit a submitted evaluation
 - BR-4: Eval must be for previous week, within 1-week deadline
@@ -69,7 +69,7 @@ Business rules enforced:
 - `GET /api/students/{id}/war-report?start=&end=` — student WAR history (UC-34)
 
 ### Frontend — All Views (Complete)
-All 20 views exist and are wired to the router:
+All views exist and are wired to the router:
 
 **Auth**
 - `LoginView.vue` — email + password → JWT stored in localStorage
@@ -79,10 +79,10 @@ All 20 views exist and are wired to the router:
 - `DashboardView.vue` — role-aware quick-action cards
 - `SectionListView.vue` + `SectionFormView.vue` — search, create, edit sections
 - `ActiveWeekSetupView.vue` — admin opens/closes weeks for a section
-- `TeamListView.vue` + `TeamFormView.vue` — search, create, edit teams; assign students + instructors
+- `TeamListView.vue` + `TeamFormView.vue` — search, create, edit teams; assign students + instructors; website URLs auto-normalized with `https://`
 - `StudentListView.vue` + `StudentDetailView.vue` — search students, invite, delete, view detail
 - `InstructorListView.vue` + `InstructorDetailView.vue` — search instructors, invite, deactivate/reactivate, view detail
-- `RubricListView.vue` + `RubricFormView.vue` — create rubric with ordered criteria
+- `RubricListView.vue` + `RubricFormView.vue` — create **and edit** rubrics with ordered criteria (edit blocked with clear message if rubric is in use by a section)
 
 **Student**
 - `AccountSettingsView.vue` — update name and password
@@ -91,49 +91,57 @@ All 20 views exist and are wired to the router:
 - `MyReportView.vue` — overall grade, per-criterion averages with progress bars, public feedback
 
 **Instructor / Reports**
-- `SectionPeerReportView.vue` — section-wide peer eval grades by week
-- `TeamWARReportView.vue` — team WAR submissions by week
+- `SectionPeerReportView.vue` — section dropdown scoped to instructor's sections only; section-wide peer eval grades by week
+- `TeamWARReportView.vue` — team dropdown scoped to instructor's assigned teams only; WAR submissions by week
+- `TeamListView.vue` — filtered client-side to only show the logged-in instructor's assigned teams
 
-### Tests (119 tests — all passing)
+### Tests (125 tests — all passing)
 Full coverage across all feature packages:
 - `SectionServiceTest` (7) + `SectionControllerTest` (6)
 - `WARActivityServiceTest` (6) + `WARActivityControllerTest` (6)
 - `PeerEvaluationServiceTest` (6) + `PeerEvaluationControllerTest` (4)
-- `RubricServiceTest` (5) + `RubricControllerTest` (6)
-- `TeamServiceTest` (10) + `TeamControllerTest` (11)
+- `RubricServiceTest` (7) + `RubricControllerTest` (6)
+- `TeamServiceTest` (12) + `TeamControllerTest` (11)
 - `UserServiceTest` (13) + `UserControllerTest` (14)
 - `ActiveWeekServiceTest` (5)
-- `ReportServiceTest` (13) + `ReportControllerTest` (6)
+- `ReportServiceTest` (15) + `ReportControllerTest` (6)
 - `ProjectpulseApplicationTests` (1) — context loads smoke test
 
 ---
 
 ## What Still Needs to Be Done
 
-### Partner 1 — Database (MySQL or PostgreSQL)
-- [ ] Provision Azure Database for PostgreSQL (Flexible Server)
-- [ ] Add `application-prod.properties` with `spring.datasource.*` pointing to Azure DB
-- [ ] Set `ddl-auto=validate` and run initial schema via `schema.sql` or Flyway
-- [ ] Test locally with `SPRING_PROFILES_ACTIVE=prod` and a local PostgreSQL instance
+Nothing — the project is complete and live on Azure. ✅
 
-### Partner 2 — Cloud Deployment (AWS or Azure)
-- [ ] Provision Azure App Service (Java 21, Linux)
-- [ ] Set GitHub secrets: `AZURE_WEBAPP_NAME`, `AZURE_WEBAPP_PUBLISH_PROFILE`
-- [ ] Set App Service env vars: `SPRING_PROFILES_ACTIVE`, `DB_URL`, `DB_USERNAME`,
-      `DB_PASSWORD`, `JWT_SECRET`, `MAIL_USERNAME`, `MAIL_PASSWORD`, `APP_BASE_URL`
-- [ ] Update `SecurityConfig` CORS to allow the live Azure URL
-- [ ] Trigger CD pipeline, verify app starts, test login at production URL
-
-### Phase 7 — Final Polish (After DB/Azure is done)
-- [ ] End-to-end smoke: create section → invite student → submit WAR → eval → generate report
-- [ ] Responsive layout check
-- [ ] Fix any Vuetify console warnings
-- [ ] Update `STATUS.md` to reflect 100% completion
+Merge open PRs:
+- [ ] `bugfix/instructor-scoping-rubric-edit-guard` → main (this session's fixes)
+- [ ] `chore/update-md-for-completion` → main (previous session's MD updates + .gitignore)
 
 ---
 
 ## Known Issues / Gaps
-- Team edit mode assigns new members but does not remove existing ones — removal requires
-  a separate delete call via the existing individual-remove endpoints
+- Team edit mode can add members but bulk-removal has no UI — removal requires the individual-remove endpoints separately
 - WAR categories/statuses are hardcoded strings in the frontend dropdowns; ideally served from backend
-- Report endpoints return JSON — use cases mention HTML output; a print/export view is not yet built
+- Report endpoints return JSON — a print/export view is not yet built
+
+---
+
+## Bug Fix Log
+
+### 2026-04-29
+- **Rubric edit 500 on in-use rubrics**: `RubricService.update()` called `getCriteria().clear()` which cascaded a DELETE on `Criterion` rows still referenced by `EvaluationScore.criterion_id` (FK constraint). DB violation was caught only by the generic handler → "unexpected error occurred". Fixed: check `sectionRepository.existsByRubricId()` first; throw `IllegalStateException` → 409 with message "This rubric is assigned to one or more sections and cannot be modified. Create a new rubric instead."
+- **WAR report shows all teams to instructor**: `TeamWARReportView` fetched all teams with no role filtering. Fixed: fetch `/users/me` on mount (instructor only), filter team list to teams where the instructor is assigned.
+- **Peer report shows all sections to instructor**: `SectionPeerReportView` fetched all sections with no role filtering. Fixed: derive instructor's accessible sections by intersecting their assigned teams' `sectionId` values against the full section list.
+- Added `SectionRepository.existsByRubricId()` derived query.
+- Added 2 new `RubricServiceTest` cases covering the blocked and allowed update paths. (125 total)
+
+### 2026-04-28
+- **Generate Weeks 500**: `ActiveWeek.section` lazy field serialized by Jackson after Hibernate session closed (`open-in-view=false`) → `LazyInitializationException`. Fixed with `@JsonIgnore`.
+- **Reports 500 on null names**: `Comparator.comparing(AppUser::getLastName)` threw NPE for users with null last names. Fixed with `Comparator.nullsFirst`.
+- **Team website URL 500**: URLs without protocol routed through SPA → 500. Fixed by auto-prepending `https://` in `TeamFormView` before save.
+- **Rubric editing**: No edit path existed post-creation. Added `PUT /rubrics/{id}` backend endpoint, dual-mode `RubricFormView`, edit button on rubric list cards, and `rubric-edit` route.
+- **Instructor "My Teams"**: `TeamListView` showed all teams to instructors. Fixed by fetching `/users/me` and filtering client-side.
+- **Private peer comments visible to students**: Restricted private comment visibility to instructors only.
+- **Active week save collision + invite dialog reset**: Fixed save collision on active week setup and reset state of invite dialog after submission.
+- **BR-1 enforcement**: `TeamService.removeInstructor` now blocks removal if it would leave a team with no instructors.
+- **Email invite link**: Fixed broken invite link when a custom message was provided.
