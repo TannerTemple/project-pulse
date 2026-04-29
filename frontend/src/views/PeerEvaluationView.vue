@@ -194,7 +194,7 @@
       // Load team roster
       if (me.teamId) {
         const team = await api.get<any>(`/teams/${me.teamId}`)
-        teammates.value = team.students
+        teammates.value = team.students.filter((s: any) => s.id !== me.id)
 
         // Load rubric criteria from section's rubric
         const section = await api.get<any>(`/sections/${me.sectionId}`)

@@ -67,6 +67,11 @@ public class PeerEvaluationService {
             throw new IllegalStateException("You have already submitted an evaluation for this teammate this week.");
         }
 
+        // Cannot evaluate yourself
+        if (evaluator.getId().equals(evaluatee.getId())) {
+            throw new IllegalArgumentException("You cannot submit a peer evaluation for yourself.");
+        }
+
         // Must be teammates
         if (evaluator.getTeam() == null || !evaluator.getTeam().equals(evaluatee.getTeam())) {
             throw new IllegalArgumentException("You can only evaluate members of your own team.");
