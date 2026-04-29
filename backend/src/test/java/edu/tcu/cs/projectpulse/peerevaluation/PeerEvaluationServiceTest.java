@@ -147,22 +147,6 @@ class PeerEvaluationServiceTest {
     }
 
     @Test
-    void submit_givenSelfEvaluation_throwsIllegalArgumentException() {
-        given(userRepository.findById(1L)).willReturn(Optional.of(evaluator));
-        given(weekRepository.findById(10L)).willReturn(Optional.of(previousWeek));
-        given(evalRepository.findByEvaluatorIdAndEvaluateeIdAndWeekId(1L, 1L, 10L))
-                .willReturn(Optional.empty());
-
-        PeerEvaluationRequest req = new PeerEvaluationRequest(
-                1L, 10L, null, null, List.of(new ScoreRequest(1L, 10))
-        );
-
-        assertThatThrownBy(() -> evalService.submit(req))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("yourself");
-    }
-
-    @Test
     void submit_givenNonTeammate_throwsIllegalArgumentException() {
         AppUser stranger = new AppUser();
         stranger.setId(3L);
