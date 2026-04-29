@@ -13,5 +13,7 @@ public interface SectionRepository extends JpaRepository<Section, Long> {
 
     boolean existsByName(String name);
 
+    boolean existsByRubricId(Long rubricId);
+
     List<Section> findByNameContainingIgnoreCase(String name);
 }

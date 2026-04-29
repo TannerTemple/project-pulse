@@ -4,6 +4,7 @@ import edu.tcu.cs.projectpulse.common.exception.ObjectNotFoundException;
 import edu.tcu.cs.projectpulse.rubric.dto.CriterionDto;
 import edu.tcu.cs.projectpulse.rubric.dto.RubricRequest;
 import edu.tcu.cs.projectpulse.rubric.dto.RubricResponse;
+import edu.tcu.cs.projectpulse.section.SectionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,6 +17,7 @@ public class RubricService {
 
     private final RubricRepository rubricRepository;
     private final CriterionRepository criterionRepository;
+    private final SectionRepository sectionRepository;
 
     @Transactional(readOnly = true)
     public List<RubricResponse> findAll() {
@@ -41,6 +43,10 @@ public class RubricService {
     @Transactional
     public RubricResponse update(Long id, RubricRequest request) {
         Rubric rubric = getRubricOrThrow(id);
+        if (sectionRepository.existsByRubricId(id)) {
+            throw new IllegalStateException(
+                    "This rubric is assigned to one or more sections and cannot be modified. Create a new rubric instead.");
+        }
         if (!rubric.getName().equals(request.name()) && rubricRepository.existsByName(request.name())) {
             throw new IllegalStateException("A rubric named \"" + request.name() + "\" already exists.");
         }
